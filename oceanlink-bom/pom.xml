@@ -32,6 +32,7 @@
     <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
 
     <oceanlink.api.version>1.0-SNAPSHOT</oceanlink.api.version>
+    <oceanlink.common.version>1.0-SNAPSHOT</oceanlink.common.version>
   </properties>
 
   <dependencyManagement>
@@ -40,6 +41,11 @@
         <groupId>org.example</groupId>
         <artifactId>oceanlink-api</artifactId>
         <version>${oceanlink.api.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.example</groupId>
+        <artifactId>oceanlink-common</artifactId>
+        <version>${oceanlink.common.version}</version>
       </dependency>
       <!-- common -->
       <dependency>
