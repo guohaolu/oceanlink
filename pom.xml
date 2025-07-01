@@ -14,6 +14,7 @@
     <module>oceanlink-product</module>
     <module>oceanlink-market</module>
     <module>oceanlink-api</module>
+    <module>oceanlink-common</module>
   </modules>
 
   <properties>
