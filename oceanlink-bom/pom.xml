@@ -27,6 +27,8 @@
     <redisson.version>3.18.0</redisson.version>
     <easyexcel.version>4.0.3</easyexcel.version>
     <fastjson.version>1.2.83</fastjson.version>
+    <clickhouse.jdbc.version>0.8.3</clickhouse.jdbc.version>
+    <spring-boot-admin.version>2.7.10</spring-boot-admin.version>
 
     <org.projectlombok.version>1.18.30</org.projectlombok.version>
     <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
@@ -41,6 +43,18 @@
         <groupId>org.example</groupId>
         <artifactId>oceanlink-api</artifactId>
         <version>${oceanlink.api.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>de.codecentric</groupId>
+        <artifactId>spring-boot-admin-starter-client</artifactId>
+        <version>${spring-boot-admin.version}</version>
+      </dependency>
+      <!-- clickhouse jdbc -->
+      <dependency>
+        <groupId>com.clickhouse</groupId>
+        <artifactId>clickhouse-jdbc</artifactId>
+        <version>${clickhouse.jdbc.version}</version>
+        <classifier>shaded-all</classifier>
       </dependency>
       <dependency>
         <groupId>org.example</groupId>
