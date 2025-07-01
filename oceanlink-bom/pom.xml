@@ -27,6 +27,7 @@
     <redisson.version>3.18.0</redisson.version>
     <easyexcel.version>4.0.3</easyexcel.version>
     <fastjson.version>1.2.83</fastjson.version>
+    <logstash-logback-encoder.version>7.0.1</logstash-logback-encoder.version>
     <clickhouse.jdbc.version>0.8.3</clickhouse.jdbc.version>
     <spring-boot-admin.version>2.7.10</spring-boot-admin.version>
 
@@ -86,6 +87,11 @@
         <groupId>com.alibaba</groupId>
         <artifactId>fastjson</artifactId>
         <version>${fastjson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>net.logstash.logback</groupId>
+        <artifactId>logstash-logback-encoder</artifactId>
+        <version>${logstash-logback-encoder.version}</version>
       </dependency>
       <!-- annotation processor -->
       <dependency>
