@@ -19,6 +19,20 @@
   </properties>
 
   <dependencies>
-
+    <!-- JSR 354 API -->
+    <dependency>
+      <groupId>javax.money</groupId>
+      <artifactId>money-api</artifactId>
+    </dependency>
+    <!-- JSR 354 参考实现 (Moneta) -->
+    <dependency>
+      <groupId>org.javamoney</groupId>
+      <artifactId>moneta</artifactId>
+    </dependency>
+    <!-- Excel -->
+    <dependency>
+      <groupId>com.alibaba</groupId>
+      <artifactId>easyexcel</artifactId>
+    </dependency>
   </dependencies>
 </project>

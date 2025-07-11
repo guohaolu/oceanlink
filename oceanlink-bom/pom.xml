@@ -22,6 +22,8 @@
     <common-lang3.version>3.11</common-lang3.version>
     <commons-collections4.version>4.4</commons-collections4.version>
     <guava.version>33.2.1-jre</guava.version>
+    <money-api.version>1.1</money-api.version>
+    <moneta.version>1.4.5</moneta.version>
 
     <spring-boot.version>2.7.6</spring-boot.version>
     <redisson.version>3.18.0</redisson.version>
@@ -89,6 +91,24 @@
         <groupId>com.alibaba</groupId>
         <artifactId>fastjson</artifactId>
         <version>${fastjson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.alibaba</groupId>
+        <artifactId>easyexcel</artifactId>
+        <version>${easyexcel.version}</version>
+      </dependency>
+      <!-- JSR 354 API -->
+      <dependency>
+        <groupId>javax.money</groupId>
+        <artifactId>money-api</artifactId>
+        <version>${money-api.version}</version>
+      </dependency>
+      <!-- JSR 354 参考实现 (Moneta) -->
+      <dependency>
+        <groupId>org.javamoney</groupId>
+        <artifactId>moneta</artifactId>
+        <version>${moneta.version}</version>
+        <scope>runtime</scope> <!-- 通常是运行时依赖 -->
       </dependency>
       <dependency>
         <groupId>net.logstash.logback</groupId>
