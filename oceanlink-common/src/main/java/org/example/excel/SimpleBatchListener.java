@@ -8,19 +8,17 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
  * 简单批量读取-监听器
  * 用于处理Excel数据导入，通过监听事件进行批量处理数据
  *
  * @param <T> 原始数据类型
- * @param <R> 转换后的实体类型
  * @author guohao.lu
  */
 @Slf4j
 @Getter
-public class SimpleBatchListener<T, R> extends AnalysisEventListener<T> {
+public class SimpleBatchListener<T> extends AnalysisEventListener<T> {
     // 批量处理的大小，即每批处理的记录数
     private static final int BATCH_SIZE = 1500;
 
@@ -28,24 +26,20 @@ public class SimpleBatchListener<T, R> extends AnalysisEventListener<T> {
     private Integer total = 0;
 
     // 缓存转换后的实体对象，用于批量处理
-    private final List<R> cachedList = new ArrayList<>();
+    private final List<T> cachedList = new ArrayList<>();
 
-    // 转换器，用于将原始数据转换为实体对象
-    private final Function<T, R> converter;
     // 消费者，用于处理一批转换后的实体对象
-    private final Consumer<List<R>> consumer;
+    private final Consumer<List<T>> consumer;
     // 原始数据的类类型
     private final Class<T> clazz;
 
     /**
      * 构造函数
      *
-     * @param converter 原始数据到实体对象的转换器
      * @param consumer  批量处理实体对象的消费者
      * @param clazz     原始数据的类类型
      */
-    public SimpleBatchListener(Function<T, R> converter, Consumer<List<R>> consumer, Class<T> clazz) {
-        this.converter = converter;
+    public SimpleBatchListener(Class<T> clazz, Consumer<List<T>> consumer) {
         this.consumer = consumer;
         this.clazz = clazz;
     }
@@ -58,10 +52,8 @@ public class SimpleBatchListener<T, R> extends AnalysisEventListener<T> {
      */
     @Override
     public void invoke(T data, AnalysisContext context) {
-        // 将原始数据转换为实体对象
-        R entity = converter.apply(data);
         // 将转换后的实体对象添加到缓存列表中
-        cachedList.add(entity);
+        cachedList.add(data);
         // 增加总数计数
         total++;
 
