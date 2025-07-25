@@ -234,9 +234,30 @@
         <enabled>true</enabled>
       </releases>
     </repository>
+    <repository>
+      <id>central</id>
+      <name>Central Repository</name>
+      <url>https://repo.maven.apache.org/maven2</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>  <!-- 中央仓库默认不启用快照 -->
+      </snapshots>
+    </repository>
   </repositories>
 
   <pluginRepositories>
+    <pluginRepository>
+      <id>local</id>
+      <url>file://D:/repository</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
     <pluginRepository>
       <id>aliyun-plugin</id>
       <url>https://maven.aliyun.com/repository/public</url>
@@ -245,6 +266,17 @@
       </releases>
       <snapshots>
         <enabled>false</enabled>
+      </snapshots>
+    </pluginRepository>
+    <pluginRepository>
+      <id>central</id>
+      <name>Central Repository</name>
+      <url>https://repo.maven.apache.org/maven2</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>  <!-- 中央仓库默认不启用插件快照 -->
       </snapshots>
     </pluginRepository>
   </pluginRepositories>
