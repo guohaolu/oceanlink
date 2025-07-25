@@ -18,6 +18,8 @@
    实现分布式链路的性能监控，使用[clickhouse](https://clickhouse.com/docs)存储
 6. 集成[eclipse collection](https://github.com/eclipse-collections/eclipse-collections)类库，实现数据的压缩和高效运算，需要监控内存使用情况
 7. 通过Caffeine，Zookeeper，Redis实现多级缓存架构设计
+8. 基于MySQL，[canal](https://github.com/alibaba/canal/wiki/QuickStart)，Clickhouse实现数据异构，支持多维度查询
+9. 基于ProxySQL实现MySQL的读写分离，流量镜像，故障转移
 
 # 系统设计
 
