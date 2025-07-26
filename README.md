@@ -20,6 +20,7 @@
 7. 通过Caffeine，Zookeeper，Redis实现多级缓存架构设计
 8. 基于MySQL，[canal](https://github.com/alibaba/canal/wiki/QuickStart)，Clickhouse实现数据异构，支持多维度查询
 9. 基于ProxySQL实现MySQL的读写分离，流量镜像，故障转移
+10. 基于拓展点机制扩展canal对接的目标数据源。
 
 # 系统设计
 

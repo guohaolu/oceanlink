@@ -4,7 +4,7 @@
 
   <groupId>org.example</groupId>
   <artifactId>oceanlink</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>oceanlink</name>
@@ -27,12 +27,14 @@
     <spring-boot.version>2.7.6</spring-boot.version>
     <spring-cloud.version>2021.0.8</spring-cloud.version>
     <spring-cloud-alibaba.version>2021.0.5.0</spring-cloud-alibaba.version>
-    <oceanlink-bom.version>1.0.0</oceanlink-bom.version>
+    <oceanlink-bom.version>1.0.0-SNAPSHOT</oceanlink-bom.version>
     <hutool.version>5.8.21</hutool.version>
     <mybatis-plus.version>3.5.7</mybatis-plus.version>
     <!-- annotation processor -->
     <org.projectlombok.version>1.18.30</org.projectlombok.version>
     <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
+    <!--maven-->
+    <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
   </properties>
 
   <dependencies>
@@ -224,62 +226,6 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
-
-  <repositories>
-    <repository>
-      <id>public</id>
-      <name>aliyun nexus</name>
-      <url>https://maven.aliyun.com/repository/public/</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-    </repository>
-    <repository>
-      <id>central</id>
-      <name>Central Repository</name>
-      <url>https://repo.maven.apache.org/maven2</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>  <!-- 中央仓库默认不启用快照 -->
-      </snapshots>
-    </repository>
-  </repositories>
-
-  <pluginRepositories>
-    <pluginRepository>
-      <id>local</id>
-      <url>file://D:/repository</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </pluginRepository>
-    <pluginRepository>
-      <id>aliyun-plugin</id>
-      <url>https://maven.aliyun.com/repository/public</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </pluginRepository>
-    <pluginRepository>
-      <id>central</id>
-      <name>Central Repository</name>
-      <url>https://repo.maven.apache.org/maven2</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>  <!-- 中央仓库默认不启用插件快照 -->
-      </snapshots>
-    </pluginRepository>
-  </pluginRepositories>
 
   <build>
     <pluginManagement>

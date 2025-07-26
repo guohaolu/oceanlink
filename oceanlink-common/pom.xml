@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.example</groupId>
     <artifactId>oceanlink</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>oceanlink-common</artifactId>
@@ -28,6 +28,8 @@
     <dependency>
       <groupId>org.javamoney</groupId>
       <artifactId>moneta</artifactId>
+      <version>1.4.5</version>
+      <type>pom</type>
     </dependency>
     <!-- Excel -->
     <dependency>
@@ -38,7 +40,7 @@
     <dependency>
       <groupId>com.clickhouse</groupId>
       <artifactId>clickhouse-jdbc</artifactId>
-      <classifier>shaded-all</classifier>
+      <classifier>all</classifier>
     </dependency>
   </dependencies>
 </project>
