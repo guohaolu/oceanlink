@@ -10,7 +10,7 @@
 
 # 待开发项
 
-1. mybatis-plus中关于clickhouse的[sql注入器](https://baomidou.com/guides/sql-injector/)，实现诸如：异步插入等方法
+1. mybatis-plus中关于clickhouse的[sql注入器](https://baomidou.com/guides/sql-injector/)，实现诸如：异步插入[]()等方法
 2. 通过[moneta](https://github.com/JavaMoney/jsr354-ri)实现统一的货币架构
 3. 通过EasyExcel实现：多Excel流式监听器；通过模版导出单sheet多表Excel；构建通用的导入组件
 4. 实现对飞书的集成，通过webhook实现预警功能
