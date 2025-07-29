@@ -29,6 +29,7 @@
         <profile>
             <id>rdc</id>
             <properties>
+                <maven.artifact.threads>20</maven.artifact.threads>
                 <altSnapshotDeploymentRepository>
                     2563731-snapshot-PBNCmC::default::https://packages.aliyun.com/68848b74e5ba87aaf5002653/maven/2563731-snapshot-pbncmc
                 </altSnapshotDeploymentRepository>
