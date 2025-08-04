@@ -17,6 +17,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.lang.NonNull;
+import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -24,15 +25,41 @@ import java.util.List;
 
 /**
  * EasyExcel下拉框写入处理器
+ * <p>
+ * 该类用于在使用 EasyExcel 导出 Excel 文件时，为指定字段添加下拉框校验功能。
+ * 支持通过注解 {@link ExcelDropDown} 配置下拉框的选项来源（静态值或远程字典），
+ * 并可设置输入提示和是否允许自定义输入。
+ * </p>
+ * 示例代码：
+ * <pre>{@code
+ *    EasyExcel.write(response.getOutputStream(), FinanceInvoiceConfigExcelDTO.class)
+ *                     .registerWriteHandler(new DropDownSheetWriteHandler(FinanceInvoiceConfigExcelDTO.class))
+ *                     .registerWriteHandler(new LongestMatchColumnWidthStyleStrategy())
+ *                     .sheet("发票类型判断配置")
+ *                     .doWrite(new ArrayList<>());
+ * }</pre>
  *
  * @author guohao.lu
  */
+@Component
 @RequiredArgsConstructor
 public class DropDownSheetWriteHandler implements SheetWriteHandler, ApplicationContextAware {
+    /**
+     * 当前处理的实体类，用于获取字段上的 {@link ExcelDropDown} 注解
+     */
     private final Class<?> clazz;
 
+    /**
+     * 远程字典管理器，用于根据字典类型获取字典项列表
+     */
     private IRemoteDictManager remoteDictManager;
 
+    /**
+     * 在 Sheet 创建完成后执行的操作，用于添加数据验证（如下拉框）
+     *
+     * @param writeWorkbookHolder 工作簿持有者，包含工作簿相关信息
+     * @param writeSheetHolder    Sheet 持有者，包含当前 Sheet 的信息
+     */
     @Override
     public void afterSheetCreate(WriteWorkbookHolder writeWorkbookHolder, WriteSheetHolder writeSheetHolder) {
         Sheet sheet = writeSheetHolder.getSheet();
@@ -63,7 +90,7 @@ public class DropDownSheetWriteHandler implements SheetWriteHandler, Application
                 continue;
             }
 
-            // 创建下拉框
+            // 创建下拉框约束条件
             DataValidationConstraint constraint = helper.createExplicitListConstraint(
                     dictItems.toArray(new String[0])
             );
@@ -80,7 +107,7 @@ public class DropDownSheetWriteHandler implements SheetWriteHandler, Application
                 validation.createPromptBox("提示", dropDown.prompt());
             }
 
-            // 如果不允许自定义输入
+            // 如果不允许自定义输入，则设置错误提示框
             if (!dropDown.allowCustomInput()) {
                 validation.setErrorStyle(DataValidation.ErrorStyle.STOP);
                 validation.createErrorBox("错误", "请从下拉框中选择有效值");
@@ -91,6 +118,12 @@ public class DropDownSheetWriteHandler implements SheetWriteHandler, Application
         }
     }
 
+    /**
+     * 设置 Spring 应用上下文，用于注入远程字典管理器
+     *
+     * @param applicationContext Spring 应用上下文
+     * @throws BeansException 当获取 Bean 失败时抛出异常
+     */
     @Override
     public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
         this.remoteDictManager = applicationContext.getBean(IRemoteDictManager.class);
