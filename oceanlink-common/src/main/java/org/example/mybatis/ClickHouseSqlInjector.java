@@ -24,6 +24,7 @@ public class ClickHouseSqlInjector extends DefaultSqlInjector {
      * @return 注入方法集合
      * @since 3.5.6
      */
+    @Override
     public List<AbstractMethod> getMethodList(Configuration configuration, Class<?> mapperClass, TableInfo tableInfo) {
         // TODO 待开发项
         return new ArrayList<>();

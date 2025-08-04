@@ -145,6 +145,7 @@ public final class WriteCellDataBuilder {
         DataFormatData dataFormatData = writeCellData.getOrCreateStyle().getDataFormatData() == null ? new DataFormatData() : writeCellData.getOrCreateStyle().getDataFormatData();
         dataFormatData.setIndex((short) 10);
 
+        writeCellData.getWriteCellStyle().setDataFormatData(dataFormatData);
         writeCellData.setType(CellDataTypeEnum.NUMBER);
         return this;
     }
