@@ -11,10 +11,11 @@ import java.util.List;
 
 /**
  * ClickHouseSqlInjector
+ *
+ * @author guohao.lu
  */
 @Component
 public class ClickHouseSqlInjector extends DefaultSqlInjector {
-
     /**
      * 获取注入的方法
      *
@@ -29,5 +30,4 @@ public class ClickHouseSqlInjector extends DefaultSqlInjector {
         // TODO 待开发项
         return new ArrayList<>();
     }
-
 }
