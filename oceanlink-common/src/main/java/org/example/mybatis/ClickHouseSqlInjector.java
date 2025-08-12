@@ -4,9 +4,7 @@ import com.baomidou.mybatisplus.core.injector.AbstractMethod;
 import com.baomidou.mybatisplus.core.injector.DefaultSqlInjector;
 import com.baomidou.mybatisplus.core.metadata.TableInfo;
 import org.apache.ibatis.session.Configuration;
-import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,7 +12,6 @@ import java.util.List;
  *
  * @author guohao.lu
  */
-@Component
 public class ClickHouseSqlInjector extends DefaultSqlInjector {
     /**
      * 获取注入的方法
@@ -27,7 +24,9 @@ public class ClickHouseSqlInjector extends DefaultSqlInjector {
      */
     @Override
     public List<AbstractMethod> getMethodList(Configuration configuration, Class<?> mapperClass, TableInfo tableInfo) {
-        // TODO 待开发项
-        return new ArrayList<>();
+        List<AbstractMethod> methodList = super.getMethodList(configuration,mapperClass,tableInfo);
+        methodList.add(new AsyncInsertClickhouse());
+
+        return methodList;
     }
 }

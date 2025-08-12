@@ -13,11 +13,6 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddressList;
 import org.example.manager.IRemoteDictManager;
 import org.example.pojo.dto.SysDictItemDTO;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -41,9 +36,8 @@ import java.util.List;
  *
  * @author guohao.lu
  */
-@Component
 @RequiredArgsConstructor
-public class DropDownSheetWriteHandler implements SheetWriteHandler, ApplicationContextAware {
+public class DropDownSheetWriteHandler implements SheetWriteHandler {
     /**
      * 当前处理的实体类，用于获取字段上的 {@link ExcelDropDown} 注解
      */
@@ -52,7 +46,7 @@ public class DropDownSheetWriteHandler implements SheetWriteHandler, Application
     /**
      * 远程字典管理器，用于根据字典类型获取字典项列表
      */
-    private IRemoteDictManager remoteDictManager;
+    private final IRemoteDictManager remoteDictManager;
 
     /**
      * 在 Sheet 创建完成后执行的操作，用于添加数据验证（如下拉框）
@@ -116,16 +110,5 @@ public class DropDownSheetWriteHandler implements SheetWriteHandler, Application
 
             sheet.addValidationData(validation);
         }
-    }
-
-    /**
-     * 设置 Spring 应用上下文，用于注入远程字典管理器
-     *
-     * @param applicationContext Spring 应用上下文
-     * @throws BeansException 当获取 Bean 失败时抛出异常
-     */
-    @Override
-    public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
-        this.remoteDictManager = applicationContext.getBean(IRemoteDictManager.class);
     }
 }
