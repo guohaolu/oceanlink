@@ -1,7 +1,5 @@
 package org.example.pojo.entity;
 
-import com.baomidou.mybatisplus.annotation.FieldStrategy;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -66,11 +64,10 @@ public class FinanceTpWarehouseAgeEntity {
      */
     private String createByName;
 
-//    /**
-//     * 创建时间，审计字段，系统自动填充
-//     */
-//    @TableField(insertStrategy = FieldStrategy.NEVER)
-//    private LocalDateTime createTime;
+    /**
+     * 创建时间，审计字段，系统自动填充
+     */
+    private LocalDateTime createTime;
 
     /**
      * 更新人账号，审计字段，系统自动填充，默认值：sysDefaultUser
@@ -82,9 +79,8 @@ public class FinanceTpWarehouseAgeEntity {
      */
     private String updateByName;
 
-//    /**
-//     * 更新时间，审计字段，系统自动填充
-//     */
-//    @TableField(insertStrategy = FieldStrategy.NEVER)
-//    private LocalDateTime updateTime;
+    /**
+     * 更新时间，审计字段，系统自动填充
+     */
+    private LocalDateTime updateTime;
 }

@@ -6,8 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.time.LocalDate;
-
 @SpringBootTest
 class FinanceTpWarehouseAgeCkRepositoryTest {
     @Autowired
@@ -17,7 +15,7 @@ class FinanceTpWarehouseAgeCkRepositoryTest {
     void testInsertAsync() {
         FinanceTpWarehouseAgeEntity entity1 = new FinanceTpWarehouseAgeEntity();
         // 设置属性值
-        entity1.setReportDate(LocalDate.now());
+//        entity1.setReportDate(LocalDate.now());
         entity1.setTripartiteProviderName("Test Provider");
         entity1.setTripartiteWhCode("WH001");
         entity1.setTripartiteSkuCode("SKU001");
