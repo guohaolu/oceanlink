@@ -32,3 +32,6 @@
 
 ## 货币商城体系
 参考vivo技术团队对JSR354的[技术分享](https://zhuanlan.zhihu.com/p/445045886)，支持跨境电商下的不同货币之间的转换，拓展了在线商城的虚拟货币类型，如：积分，钻石，鼓励金。
+
+## Caffeine缓存的使用
+在oceanlink-common模块下的Caffeine目录下
