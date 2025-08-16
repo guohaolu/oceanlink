@@ -2,6 +2,7 @@
 <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+
     <mirrors>
         <mirror>
             <id>mirror</id>
@@ -10,6 +11,7 @@
             <url>https://maven.aliyun.com/nexus/content/groups/public</url>
         </mirror>
     </mirrors>
+
     <servers>
         <server>
             <id>2563731-release-dP1T3l</id>
@@ -22,10 +24,12 @@
             <password>XXsNPtQN5PVx</password>
         </server>
     </servers>
+
     <profiles>
         <profile>
             <id>rdc</id>
             <properties>
+                <maven.artifact.threads>20</maven.artifact.threads>
                 <altSnapshotDeploymentRepository>
                     2563731-snapshot-PBNCmC::default::https://packages.aliyun.com/68848b74e5ba87aaf5002653/maven/2563731-snapshot-pbncmc
                 </altSnapshotDeploymentRepository>
@@ -119,7 +123,9 @@
             </pluginRepositories>
         </profile>
     </profiles>
+
     <activeProfiles>
         <activeProfile>rdc</activeProfile>
     </activeProfiles>
+
 </settings>

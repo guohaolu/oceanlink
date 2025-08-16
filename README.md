@@ -35,3 +35,8 @@
 
 ## Caffeine缓存的使用
 在oceanlink-common模块下的Caffeine目录下
+
+## 多级缓存一致性解决方案
+参考[社交直播多级缓存一致性解决方案-缓存管道-技术分享](https://zhuanlan.zhihu.com/p/656198463)
+### 基于binlog同步
+### 基于注册中心响应

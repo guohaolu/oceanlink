@@ -29,5 +29,5 @@ public @interface ExcelDropDown {
     /**
      * 下拉框提示信息
      */
-    String prompt() default "请选择";
+    String prompt() default "请选择下拉框中的值";
 }
