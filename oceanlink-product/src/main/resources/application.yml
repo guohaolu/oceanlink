@@ -16,6 +16,7 @@ spring:
           password: Aa123456
           driver-class-name: com.clickhouse.jdbc.ClickHouseDriver
           type: com.zaxxer.hikari.HikariDataSource
+          pool-name: HikariPool-clickhouse
           hikari:
             connection-timeout: 3_000
             validation-timeout: 3_000
@@ -23,7 +24,6 @@ spring:
             minimum-idle: 5
             idle-timeout: 30_000
             max-lifetime: 60_000
-            pool-name: HikariPool
 
 mybatis-plus:
   configuration:
