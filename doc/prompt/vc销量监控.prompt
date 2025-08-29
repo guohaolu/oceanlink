@@ -1,0 +1,98 @@
+create table ods_sale_vc_monitor_t
+(
+    id                     UInt64 comment '主键ID',
+    store_id               UInt64 comment '店铺ID',
+    store_name             LowCardinality(String) comment '店铺名称',
+    market_id              Int8 comment '市场ID',
+    market_code            LowCardinality(String) comment '市场编码',
+    market_name            LowCardinality(String) comment '市场名称/平台名称',
+    asin                   String comment '产品ASIN',
+    distributor_view       LowCardinality(String) comment '视图类型 MANUFACTURING, SOURCING',
+    parent_asin            String comment '父ASIN',
+    pic_url                String comment '产品图片URL',
+    msku_code              String comment 'MSKU编码',
+    product_title          String comment '产品标题',
+    sku_id                 Nullable(UInt64) comment 'SKU ID',
+    sku_code               String comment 'SKU编码',
+    sku_name               String comment 'SKU名称',
+    sku_category_id        Nullable(UInt64) comment 'SKU分类ID',
+    sku_category_name      LowCardinality(String) comment 'SKU分类名称',
+    team_id                Nullable(UInt64) comment '团队ID',
+    team_name              LowCardinality(String) comment '团队名称',
+    sale_duty_uid          UInt64 comment '销售负责人ID',
+    sale_duty_uname        String comment '销售负责人姓名',
+    ordered_units          Int32 comment '销量',
+    shipped_units          Int32 comment '出货数量',
+    customer_returns       Int32 comment '退货数量',
+    glance_views           Int32 comment '访问量',
+    ordered_revenue_amount Decimal(20, 8) comment '销售额',
+    shipped_revenue_amount Decimal(20, 8) comment '收入',
+    shipped_cogs_amount    Decimal(20, 8) comment '出货成本金额',
+    sales_cost             Decimal(20, 8) comment '销售成本',
+    inventory_cost         Decimal(20, 8) comment '到库成本',
+    procurement_cost       Decimal(20, 8) comment '采购成本',
+    sales_commission       Decimal(20, 8) comment '销售佣金',
+    advertising_fee        Decimal(20, 8) comment '广告费',
+    storage_fee            Decimal(20, 8) comment '仓储费',
+    compliance_fee         Decimal(20, 8) comment '合规费',
+    shipping_fee           Decimal(20, 8) comment '配送费',
+    net_ppm                Decimal(10, 6) comment 'NET PPM指标',
+    hour_timestamp         Nullable(Int64) comment '小时时间戳(秒级)',
+    hour_time              String comment '小时时间字符串',
+    date_timestamp         Int64 comment '日期时间戳(秒级)',
+    date_time              String comment '日期时间字符串',
+    month_date             String comment '月份字符串',
+    calc_date              String comment '统计日期_站点时间',
+    calc_start_time_site   String comment '统计开始时间_站点时间',
+    calc_end_time_site     String comment '统计结束时间_站点时间',
+    calc_start_time_bj     String comment '统计开始时间_北京时间',
+    calc_end_time_bj       String comment '统计结束时间_北京时间',
+    start_time_utc         Nullable(String) comment '统计结束时间_UTC时间',
+    end_time_utc           Nullable(String) comment '统计结束时间_UTC时间',
+    data_type              UInt8 comment '数据维度类型: 1=小时维度, 2=日维度',
+    has_hourly_data        UInt8                  default 0 comment '当天是否有小时数据: 0=无, 1=有',
+    has_daily_data         UInt8                  default 0 comment '当天是否有日数据: 0=无, 1=有',
+    data_priority          UInt8                  default 1 comment '数据优先级: 1=小时优先, 2=日优先',
+    data_completeness      LowCardinality(String) default 'COMPLETE' comment '数据完整性: COMPLETE=完整, PARTIAL=部分, ESTIMATED=估算',
+    source_table           LowCardinality(String) comment '来源表: hours/daily',
+    create_time            DateTime comment '创建时间',
+    update_time            DateTime comment '更新时间',
+    create_by              String comment '创建人',
+    update_by              String comment '更新人',
+    tenant_id              UInt64                 default 1 comment '租户ID',
+    _version               UInt64                 default toUnixTimestamp64Milli(now64()) comment '数据版本号(毫秒时间戳)，用于ReplacingMergeTree去重',
+    _is_deleted            UInt8                  default 0 comment '逻辑删除标记：0-有效 1-删除'
+)
+    engine = ReplacingMergeTree(_version, _is_deleted)
+        PARTITION BY (tenant_id, toYYYYMM(toDate(date_timestamp / 1000)))
+        ORDER BY (data_type, distributor_view, store_id, market_id, asin, calc_end_time_site)
+        SETTINGS index_granularity = 8192, allow_nullable_key = 1
+        COMMENT 'VC销售数据监控表(MSKU级别)-本地物理表';
+
+create table sys_currency_rate_mysql_t
+(
+    id                   Int64,
+    month                String,
+    currency_code        String,
+    exchange_rate        Decimal(12, 4),
+    custom_rate          Nullable(Decimal(12, 4)),
+    average_median_price Nullable(Decimal(12, 4)),
+    buy_price            Nullable(Decimal(12, 4)),
+    cash_price           Nullable(Decimal(12, 4)),
+    create_by            Nullable(String),
+    update_by            Nullable(String),
+    create_timestamp     Int64,
+    update_timestamp     Int64,
+    del_flag             Nullable(String),
+    tenant_id            Int64
+)
+    engine = MySQL('172.18.11.232:3306', 'ewayt', 'sys_currency_rate', 'root', '[HIDDEN]');
+
+prompt:我现在需要做一个数据聚合的sql的需求，这里的sys_currency_rate_mysql_t是汇率表，表中记录了每个月，每个不同币种的汇率。而ods_sale_vc_monitor_t是销量数据的监控表，其中date_time是日期，
+如：2025-08-29，其中msku_code是msku，这是数据的最细粒度，sku_code是sku，每个msku都会有一个sku，一个sku可以对应多个msku，所以sku是msku的上一级的维度。
+其中data_type用来表示数据维度类型: 1=小时维度, 2=日维度，因为数据落库的规则是这样的，每小时会落入小时维度的数据，每天会落入日维度的数据，所以如果是查询数据的话，今天的数据会去查小时维度数据，以前的数据需要去查日维度的数据，
+过滤条件可以使用multiIf(date_time = today_str AND data_type = 1, 1,date_time < today_str AND data_type = 2, 1,0) = 1。其中ordered_units表示销量,其中ordered_revenue_amount表示销售额,
+其中shipped_revenue_amount表示收入,其中shipped_cogs_amount表示成本。销售额，收入,成本这些是金额字段，需要先按月聚合，然后在汇率表中取出各个月的汇率，再合成一个总金额。我现在需要做的需求是：用户可以传入
+今日，7天，30天，本月，全年，自定义日期范围，还有汇率，然后展示销量，销售额，收入，成本，利润这五个指标，每个指标需要展示大数据和小数据，其中大数据会随着用户传入的日期而改变，包含这个日期范围内的汇总值，上期的汇总值（上期的意思为：
+如果本期是今日，那么上期是昨天，如果本期是7天，那么上期的7天前的7天，如果本期是本月，那么上期是上个月，如果本期是全年，那么上期是去年，如果本期是自定义的日期范围，那么上期是本期时间往前推相同的日期范围），
+小数据固定展示昨日，7日，30日，去年的汇总数据和上期数据，要求计算出的结果需要做汇率转换，并且保证一定有值，没有值展示0即可
