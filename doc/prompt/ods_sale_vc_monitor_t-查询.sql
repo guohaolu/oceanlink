@@ -7,6 +7,12 @@ WITH
     formatDateTime(today(), '%Y-%m-01') AS month_start,
     formatDateTime(today(), '%Y-01-01') AS year_start,
 
+    -- 小数据的上期日期范围
+    formatDateTime(today() - 2, '%Y-%m-%d') AS yesterday_previous_day,
+    formatDateTime(today() - 13, '%Y-%m-%d') AS last_7_days_previous_start,
+    formatDateTime(today() - 59, '%Y-%m-%d') AS last_30_days_previous_start,
+    toYear(today()) - 2 AS last_year_previous_year,
+
     'USD' AS selected_currency,
     'today' AS selected_period,
     '' AS custom_start_date,
@@ -68,9 +74,8 @@ current_sales AS (
         sum(shipped_revenue_amount) as shipped_revenue_amount,
         sum(shipped_cogs_amount) as shipped_cogs_amount,
         sum(ods_sale_vc_monitor_t.shipped_revenue_amount - ods_sale_vc_monitor_t.shipped_cogs_amount) as profit
-    FROM ods_sale_vc_monitor_t
+    FROM ods_sale_vc_monitor_t final
     WHERE date_time BETWEEN (SELECT start_date FROM current_period_range)
-
                         AND (SELECT end_date FROM current_period_range)
       AND multiIf(
           date_time = (SELECT today_str) AND data_type = 1, 1,
@@ -89,7 +94,7 @@ previous_sales AS (
         sum(shipped_revenue_amount) as shipped_revenue_amount,
         sum(shipped_cogs_amount) as shipped_cogs_amount,
         sum(ods_sale_vc_monitor_t.shipped_revenue_amount - ods_sale_vc_monitor_t.shipped_cogs_amount) as profit
-    FROM ods_sale_vc_monitor_t
+    FROM ods_sale_vc_monitor_t final
     WHERE date_time BETWEEN (SELECT start_date FROM previous_period_range)
                         AND (SELECT end_date FROM previous_period_range)
       AND multiIf(
@@ -109,8 +114,22 @@ yesterday_data AS (
         sum(shipped_revenue_amount) as shipped_revenue_amount,
         sum(shipped_cogs_amount) as shipped_cogs_amount,
         sum(ods_sale_vc_monitor_t.shipped_revenue_amount - ods_sale_vc_monitor_t.shipped_cogs_amount) as profit
-    FROM ods_sale_vc_monitor_t
+    FROM ods_sale_vc_monitor_t final
     WHERE date_time = (SELECT yesterday_str)
+      AND data_type = 2
+),
+
+-- 小数据：昨日上期数据（前天）
+yesterday_previous_data AS (
+    SELECT
+        'yesterday_previous' as period,
+        sum(ordered_units) as ordered_units,
+        sum(ordered_revenue_amount) as ordered_revenue_amount,
+        sum(shipped_revenue_amount) as shipped_revenue_amount,
+        sum(shipped_cogs_amount) as shipped_cogs_amount,
+        sum(ods_sale_vc_monitor_t.shipped_revenue_amount - ods_sale_vc_monitor_t.shipped_cogs_amount) as profit
+    FROM ods_sale_vc_monitor_t final
+    WHERE date_time = (SELECT yesterday_previous_day)
       AND data_type = 2
 ),
 
@@ -123,8 +142,22 @@ last_7_days_data AS (
         sum(shipped_revenue_amount) as shipped_revenue_amount,
         sum(shipped_cogs_amount) as shipped_cogs_amount,
         sum(ods_sale_vc_monitor_t.shipped_revenue_amount - ods_sale_vc_monitor_t.shipped_cogs_amount) as profit
-    FROM ods_sale_vc_monitor_t
+    FROM ods_sale_vc_monitor_t final
     WHERE date_time BETWEEN (SELECT last_7_days_start) AND (SELECT yesterday_str)
+      AND data_type = 2
+),
+
+-- 小数据：近7日上期数据（前7天）
+last_7_days_previous_data AS (
+    SELECT
+        'last_7_days_previous' as period,
+        sum(ordered_units) as ordered_units,
+        sum(ordered_revenue_amount) as ordered_revenue_amount,
+        sum(shipped_revenue_amount) as shipped_revenue_amount,
+        sum(shipped_cogs_amount) as shipped_cogs_amount,
+        sum(ods_sale_vc_monitor_t.shipped_revenue_amount - ods_sale_vc_monitor_t.shipped_cogs_amount) as profit
+    FROM ods_sale_vc_monitor_t final
+    WHERE date_time BETWEEN (SELECT last_7_days_previous_start) AND formatDateTime(today() - 7, '%Y-%m-%d')
       AND data_type = 2
 ),
 
@@ -137,8 +170,22 @@ last_30_days_data AS (
         sum(shipped_revenue_amount) as shipped_revenue_amount,
         sum(shipped_cogs_amount) as shipped_cogs_amount,
         sum(ods_sale_vc_monitor_t.shipped_revenue_amount - ods_sale_vc_monitor_t.shipped_cogs_amount) as profit
-    FROM ods_sale_vc_monitor_t
+    FROM ods_sale_vc_monitor_t final
     WHERE date_time BETWEEN (SELECT last_30_days_start) AND (SELECT yesterday_str)
+      AND data_type = 2
+),
+
+-- 小数据：近30日上期数据（前30天）
+last_30_days_previous_data AS (
+    SELECT
+        'last_30_days_previous' as period,
+        sum(ordered_units) as ordered_units,
+        sum(ordered_revenue_amount) as ordered_revenue_amount,
+        sum(shipped_revenue_amount) as shipped_revenue_amount,
+        sum(shipped_cogs_amount) as shipped_cogs_amount,
+        sum(ods_sale_vc_monitor_t.shipped_revenue_amount - ods_sale_vc_monitor_t.shipped_cogs_amount) as profit
+    FROM ods_sale_vc_monitor_t final
+    WHERE date_time BETWEEN (SELECT last_30_days_previous_start) AND formatDateTime(today() - 30, '%Y-%m-%d')
       AND data_type = 2
 ),
 
@@ -151,13 +198,27 @@ last_year_data AS (
         sum(shipped_revenue_amount) as shipped_revenue_amount,
         sum(shipped_cogs_amount) as shipped_cogs_amount,
         sum(ods_sale_vc_monitor_t.shipped_revenue_amount - ods_sale_vc_monitor_t.shipped_cogs_amount) as profit
-    FROM ods_sale_vc_monitor_t
+    FROM ods_sale_vc_monitor_t final
     WHERE toYear(toDate(date_time)) = toYear(today()) - 1
       AND data_type = 2
 ),
 
--- 合并小数据
-small_data AS (
+-- 小数据：去年上期数据（前年）
+last_year_previous_data AS (
+    SELECT
+        'last_year_previous' as period,
+        sum(ordered_units) as ordered_units,
+        sum(ordered_revenue_amount) as ordered_revenue_amount,
+        sum(shipped_revenue_amount) as shipped_revenue_amount,
+        sum(shipped_cogs_amount) as shipped_cogs_amount,
+        sum(ods_sale_vc_monitor_t.shipped_revenue_amount - ods_sale_vc_monitor_t.shipped_cogs_amount) as profit
+    FROM ods_sale_vc_monitor_t final
+    WHERE toYear(toDate(date_time)) = (SELECT last_year_previous_year)
+      AND data_type = 2
+),
+
+-- 合并小数据（本期）
+small_data_current AS (
     SELECT * FROM yesterday_data
     UNION ALL
     SELECT * FROM last_7_days_data
@@ -165,6 +226,17 @@ small_data AS (
     SELECT * FROM last_30_days_data
     UNION ALL
     SELECT * FROM last_year_data
+),
+
+-- 合并小数据（上期）
+small_data_previous AS (
+    SELECT * FROM yesterday_previous_data
+    UNION ALL
+    SELECT * FROM last_7_days_previous_data
+    UNION ALL
+    SELECT * FROM last_30_days_previous_data
+    UNION ALL
+    SELECT * FROM last_year_previous_data
 ),
 
 -- 应用汇率转换到本期数据
@@ -188,13 +260,14 @@ previous_with_exchange AS (
         p.ordered_revenue_amount / coalesce(e.rate, 1) as ordered_revenue_amount,
         p.shipped_revenue_amount / coalesce(e.rate, 1) as shipped_revenue_amount,
         p.shipped_cogs_amount / coalesce(e.rate, 1) as shipped_cogs_amount,
+
         p.profit / coalesce(e.rate, 1) as profit
     FROM previous_sales p
     LEFT JOIN exchange_rates e ON e.month = p.month_key
 ),
 
--- 应用汇率转换到小数据
-small_with_exchange AS (
+-- 应用汇率转换到小数据（本期）
+small_current_with_exchange AS (
     SELECT
         s.period,
         s.ordered_units,
@@ -202,14 +275,28 @@ small_with_exchange AS (
         s.shipped_revenue_amount / coalesce(e.rate, 1) as shipped_revenue_amount,
         s.shipped_cogs_amount / coalesce(e.rate, 1) as shipped_cogs_amount,
         s.profit / coalesce(e.rate, 1) as profit
-    FROM small_data s
+    FROM small_data_current s
+    CROSS JOIN (SELECT rate FROM exchange_rates ORDER BY month DESC LIMIT 1) e
+),
+
+-- 应用汇率转换到小数据（上期）
+small_previous_with_exchange AS (
+    SELECT
+        s.period,
+        s.ordered_units,
+        s.ordered_revenue_amount / coalesce(e.rate, 1) as ordered_revenue_amount,
+        s.shipped_revenue_amount / coalesce(e.rate, 1) as shipped_revenue_amount,
+        s.shipped_cogs_amount / coalesce(e.rate, 1) as shipped_cogs_amount,
+        s.profit / coalesce(e.rate, 1) as profit
+    FROM small_data_previous s
     CROSS JOIN (SELECT rate FROM exchange_rates ORDER BY month DESC LIMIT 1) e
 )
 
 -- 最终结果
 SELECT
     -- 本期大数据
-    'current_period' as data_type,
+    'big_data' as data_type,
+    'current' as data_category,
     sum(ordered_units) as ordered_units,
     sum(ordered_revenue_amount) as ordered_revenue_amount,
     sum(shipped_revenue_amount) as shipped_revenue_amount,
@@ -221,7 +308,8 @@ UNION ALL
 
 SELECT
     -- 上期大数据
-    'previous_period' as data_type,
+    'big_data' as data_type,
+    'previous' as data_category,
     sum(ordered_units) as ordered_units,
     sum(ordered_revenue_amount) as ordered_revenue_amount,
     sum(shipped_revenue_amount) as shipped_revenue_amount,
@@ -232,11 +320,25 @@ FROM previous_with_exchange
 UNION ALL
 
 SELECT
-    -- 小数据
+    -- 小数据（本期）
     period as data_type,
+    'small_data_current' as data_category,
     ordered_units,
     ordered_revenue_amount,
     shipped_revenue_amount,
     shipped_cogs_amount,
     profit
-FROM small_with_exchange;
+FROM small_current_with_exchange
+
+UNION ALL
+
+SELECT
+    -- 小数据（上期）
+    replace(period, '_previous', '') as data_type,
+    'small_data_previous' as data_category,
+    ordered_units,
+    ordered_revenue_amount,
+    shipped_revenue_amount,
+    shipped_cogs_amount,
+    profit
+FROM small_previous_with_exchange;
