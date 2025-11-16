@@ -15,11 +15,19 @@ import java.util.concurrent.atomic.AtomicInteger;
  * <p>
  * 主要通过异步线程池和调度线程池实现，其中{@code dataList}是状态值，两个线程池对其的操作需要加锁
  * </p>
+ *  示例代码:
+ *  <pre>{@code
+ *         AsyncBatchProcessorScheduled<FinanceTpWarehouseAgeCkMapper, FinanceTpWarehouseAgeEntity> asyncBatchProcessorScheduled =
+ *                 new AsyncBatchProcessorScheduled<>(financeTpWarehouseAgeCkRepository);
+ *         asyncBatchProcessorScheduled.registerShutdownHook();
+ *         asyncBatchProcessorScheduled.addData(new FinanceTpWarehouseAgeEntity());
+ *         asyncBatchProcessorScheduled.forceFlush();
+ *  }</pre>
  *
  * @author guohao.lu
  */
 @Slf4j
-public class NasFileBatchProcessorScheduled<M extends BaseMapper<T>, T> {
+public class AsyncBatchProcessorScheduled<M extends BaseMapper<T>, T> {
     /**
      * 数据列表，用于存储待处理的数据项
      */
@@ -70,7 +78,7 @@ public class NasFileBatchProcessorScheduled<M extends BaseMapper<T>, T> {
      *
      * @param repository 数据库服务接口实现类，用于执行批量插入操作
      */
-    public NasFileBatchProcessorScheduled(ServiceImpl<M, T> repository) {
+    public AsyncBatchProcessorScheduled(ServiceImpl<M, T> repository) {
         this.repository = repository;
         this.scheduler = Executors.newScheduledThreadPool(1);
         this.asyncExecutor = Executors.newFixedThreadPool(2);

@@ -1,6 +1,8 @@
 package org.example.repository;
 
 import com.google.common.collect.Lists;
+import org.example.handler.AsyncBatchProcessorScheduled;
+import org.example.mapper.FinanceTpWarehouseAgeCkMapper;
 import org.example.pojo.entity.FinanceTpWarehouseAgeEntity;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,5 +30,14 @@ class FinanceTpWarehouseAgeCkRepositoryTest {
         entity1.setUpdateByName("测试用户");
 
         financeTpWarehouseAgeCkRepository.getBaseMapper().asyncInsertClickhouse(Lists.newArrayList(entity1));
+    }
+
+    @Test
+    void testBatchInsert() {
+        AsyncBatchProcessorScheduled<FinanceTpWarehouseAgeCkMapper, FinanceTpWarehouseAgeEntity> asyncBatchProcessorScheduled =
+                new AsyncBatchProcessorScheduled<>(financeTpWarehouseAgeCkRepository);
+        asyncBatchProcessorScheduled.registerShutdownHook();
+        asyncBatchProcessorScheduled.addData(new FinanceTpWarehouseAgeEntity());
+        asyncBatchProcessorScheduled.forceFlush();
     }
 }
