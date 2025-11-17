@@ -1070,11 +1070,14 @@
 
     <!-- Serve endpoint for Prometheus monitoring. -->
     <!--
-        endpoint - mertics path (relative to root, statring with "/")
-        port - port to setup server. If not defined or 0 than http_port used
-        metrics - send data from table system.metrics
-        events - send data from table system.events
-        asynchronous_metrics - send data from table system.asynchronous_metrics
+        endpoint – 通过 prometheus 服务器抓取指标的 HTTP 端点。从/开始。
+        port – 端点的端口。
+        metrics – 暴露 system.metrics 表中的指标。
+        events – 暴露 system.events 表中的指标。
+        asynchronous_metrics – 暴露 system.asynchronous_metrics 表中的当前指标值。
+        errors - 按错误代码暴露自上次服务器重新启动以来发生的错误数。此信息也可以从 system.errors 中获得。
+
+        端点数据包含1000多个指标，涵盖服务、网络、磁盘、MergeTree、错误等。想了解更多指标细节，在重启服务后，可以调用 curl 127.0.0.1:9363/metrics 看到具体指标的内容。
     -->
     <!--
     <prometheus>
