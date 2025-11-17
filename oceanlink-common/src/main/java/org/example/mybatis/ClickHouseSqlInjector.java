@@ -24,7 +24,7 @@ public class ClickHouseSqlInjector extends DefaultSqlInjector {
      */
     @Override
     public List<AbstractMethod> getMethodList(Configuration configuration, Class<?> mapperClass, TableInfo tableInfo) {
-        List<AbstractMethod> methodList = super.getMethodList(configuration,mapperClass,tableInfo);
+        List<AbstractMethod> methodList = super.getMethodList(configuration, mapperClass, tableInfo);
         methodList.add(new AsyncInsertClickhouse());
 
         return methodList;

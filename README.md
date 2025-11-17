@@ -40,3 +40,8 @@
 参考[社交直播多级缓存一致性解决方案-缓存管道-技术分享](https://zhuanlan.zhihu.com/p/656198463)
 ### 基于binlog同步
 ### 基于注册中心响应
+
+## 跨线程ThreadLocal设计
+### 阿里开源-[TransmittableThreadLocal](https://github.com/alibaba/transmittable-thread-local)
+
+### 自定义实现-TransmissibleThreadLocal

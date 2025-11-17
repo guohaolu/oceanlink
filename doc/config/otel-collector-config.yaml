@@ -1,0 +1,34 @@
+# job_name: 'clickhouse-monitoring' 标记着来自 ClickHouse 的数据，如果自行修改，数据会被服务忽略。
+# host_name 定义服务的名称。
+# endpoint 指向您的 OAP 服务地址.
+# ClickHouse、OpenTelemetry Collector 和 Skywalking OAP Server 之间的网络必须可访问。
+receivers:
+  prometheus:
+    config:
+      scrape_configs:
+        - job_name: 'clickhouse-monitoring-244'
+          scrape_interval: 15s
+          static_configs:
+            - targets: ['172.16.13.244:9363'] # ['127.0.0.1:9363','127.0.0.1:9364','127.0.0.1:9365']
+              labels:
+                host_name: prometheus-clickhouse
+
+processors:
+  batch:
+
+exporters:
+  otlp:
+    endpoint: 127.0.0.1:11800
+    tls:
+      insecure: true
+service:
+  pipelines:
+    metrics:
+      receivers:
+        - prometheus
+      processors:
+        - batch
+      exporters:
+        - otlp
+
+

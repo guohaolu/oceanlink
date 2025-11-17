@@ -1,5 +1,6 @@
 package org.example.easyexcel;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import com.alibaba.excel.write.handler.SheetWriteHandler;
 import com.alibaba.excel.write.metadata.holder.WriteSheetHolder;
 import com.alibaba.excel.write.metadata.holder.WriteWorkbookHolder;
@@ -15,8 +16,11 @@ import org.example.manager.IRemoteDictManager;
 import org.example.pojo.dto.SysDictItemDTO;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * EasyExcel下拉框写入处理器
@@ -60,10 +64,20 @@ public class DropDownSheetWriteHandler implements SheetWriteHandler {
         DataValidationHelper helper = sheet.getDataValidationHelper();
 
         // 获取所有字段
-        Field[] fields = clazz.getDeclaredFields();
+        List<Field> excelFields = Arrays.stream(clazz.getDeclaredFields())
+                .filter(field -> !Modifier.isStatic(field.getModifiers())) // 排除静态字段
+                .filter(field -> field.isAnnotationPresent(ExcelProperty.class)) // 只处理有ExcelProperty注解的字段
+                .collect(Collectors.toList());
 
-        for (int i = 0; i < fields.length; i++) {
-            Field field = fields[i];
+        // 按@ExcelProperty的index或order排序
+        excelFields.sort((f1, f2) -> {
+            ExcelProperty ep1 = f1.getAnnotation(ExcelProperty.class);
+            ExcelProperty ep2 = f2.getAnnotation(ExcelProperty.class);
+            return Integer.compare(ep1.index(), ep2.index());
+        });
+
+        for (int i = 0; i < excelFields.size(); i++) {
+            Field field = excelFields.get(i);
             ExcelDropDown dropDown = field.getAnnotation(ExcelDropDown.class);
             if (dropDown == null) {
                 continue;

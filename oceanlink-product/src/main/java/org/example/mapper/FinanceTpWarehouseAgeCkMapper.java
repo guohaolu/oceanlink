@@ -1,6 +1,7 @@
 package org.example.mapper;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
+import com.baomidou.mybatisplus.annotation.InterceptorIgnore;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -17,6 +18,7 @@ import java.util.List;
  */
 @Mapper
 @DS("clickhouse")
+@InterceptorIgnore(tenantLine = "true")
 public interface FinanceTpWarehouseAgeCkMapper extends ClickhouseBaseMapper<FinanceTpWarehouseAgeEntity> {
     void removeByDate(@Param("date") LocalDate date, @Param("list") List<String> providerNames);
 

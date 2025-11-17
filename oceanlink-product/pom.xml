@@ -36,6 +36,11 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
+        <configuration>
+          <jvmArguments>
+            -Xmx512m -Xms512m -Dspring.profiles.active=dev 
+          </jvmArguments>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
