@@ -3,10 +3,17 @@ package org.example.repository;
 import com.google.common.collect.Lists;
 import org.example.handler.AsyncBatchProcessorScheduled;
 import org.example.mapper.FinanceTpWarehouseAgeCkMapper;
+import org.example.mybatis.UniqueDateTime64;
 import org.example.pojo.entity.FinanceTpWarehouseAgeEntity;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 @SpringBootTest
 class FinanceTpWarehouseAgeCkRepositoryTest {
@@ -15,21 +22,29 @@ class FinanceTpWarehouseAgeCkRepositoryTest {
 
     @Test
     void testInsertAsync() {
-        FinanceTpWarehouseAgeEntity entity1 = new FinanceTpWarehouseAgeEntity();
-        // 设置属性值
-//        entity1.setReportDate(LocalDate.now());
-        entity1.setTripartiteProviderName("Test Provider");
-        entity1.setTripartiteWhCode("WH001");
-        entity1.setTripartiteSkuCode("SKU001");
-        entity1.setStockQuantity(100);
-        entity1.setInTransitQuantity(50);
-        entity1.setAge(10);
-        entity1.setCreateBy("testUser");
-        entity1.setCreateByName("测试用户");
-        entity1.setUpdateBy("testUser");
-        entity1.setUpdateByName("测试用户");
+        Supplier<FinanceTpWarehouseAgeEntity> entitySupplier = () -> {
+            FinanceTpWarehouseAgeEntity entity = new FinanceTpWarehouseAgeEntity();
+            // 模拟数据
+            entity.setReportDate(LocalDate.now());
+            entity.setTripartiteProviderName("Test Provider");
+            entity.setTripartiteWhCode("WH001");
+            entity.setTripartiteSkuCode("SKU001");
+            entity.setStockQuantity(100);
+            entity.setInTransitQuantity(50);
+            entity.setAge(10);
+            entity.setCreateBy("testUser");
+            entity.setCreateByName("测试用户");
+            entity.setUpdateBy("testUser");
+            entity.setUpdateByName("测试用户");
+            return entity;
+        };
+        List<FinanceTpWarehouseAgeEntity> entities = Stream.generate(entitySupplier).limit(5000).peek(entity -> {
+            LocalDateTime dt = UniqueDateTime64.nextDateTime64();
+            entity.setCreateTime(dt);
+            entity.setUpdateTime(dt);
+        }).toList();
 
-        financeTpWarehouseAgeCkRepository.getBaseMapper().asyncInsertClickhouse(Lists.newArrayList(entity1));
+        financeTpWarehouseAgeCkRepository.getBaseMapper().asyncInsertClickhouse(entities);
     }
 
     @Test

@@ -29,7 +29,7 @@ public class AsyncInsertClickhouse extends AbstractMethod {
         // SETTINGS async_insert=1, wait_for_async_insert=1
         String sql = """
                 <script>
-                INSERT INTO %s %s SETTINGS async_insert=1, wait_for_async_insert=1 VALUES %s
+                INSERT INTO %s %s VALUES %s
                 </script>
                 """;
 
