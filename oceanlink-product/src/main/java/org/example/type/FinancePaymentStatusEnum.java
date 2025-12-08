@@ -28,6 +28,9 @@ public enum FinancePaymentStatusEnum {
     private final String type;
     private final Class<?> clazz;
 
+    /**
+     * TODO :待修改，存在问题
+     */
     @SuppressWarnings("unchecked")
     public static <T> T getByValue(FinancePaymentStatusEnum statusEnum, String stringValue) {
         for (FinancePaymentStatusEnum value : values()) {
