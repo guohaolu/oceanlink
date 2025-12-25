@@ -11,6 +11,7 @@ import java.util.concurrent.atomic.AtomicLong;
  *  单 JVM 内严格递增
  *  可安全落库、排序、去重
  * </p>
+ * 用在Clickhouse的{@code DateTime64(9)}
  *
  * @author guohao.lu
  */
