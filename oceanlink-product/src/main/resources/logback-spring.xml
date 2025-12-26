@@ -1,70 +1,93 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-    小技巧: 在根pom里面设置统一存放路径，统一管理方便维护
-    <properties>
-        <log-path>/Users/lengleng</log-path>
-    </properties>
-    1. 其他模块加日志输出，直接copy本文件放在resources 目录即可
-    2. 注意修改 <property name="${log-path}/log.path" value=""/> 的value模块
--->
-<configuration debug="false" scan="false">
-	<property name="log.path" value="logs/${project.artifactId}"/>
-	<!-- 彩色日志格式 -->
-	<property name="CONSOLE_LOG_PATTERN"
-			  value="${CONSOLE_LOG_PATTERN:-[traceId:%highlight(%X{traceId}){green}] %clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
-	<!-- 彩色日志依赖的渲染类 -->
-	<conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
-	<conversionRule conversionWord="wex"
-					converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter"/>
-	<conversionRule conversionWord="wEx"
-					converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter"/>
-	<!-- Console log output -->
-	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
-		<encoder>
-			<pattern>${CONSOLE_LOG_PATTERN}</pattern>
-		</encoder>
-	</appender>
+<configuration scan="false">
 
-	<!-- Log file debug output -->
-	<appender name="debug" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>${log.path}/debug.log</file>
+	<!-- ========= 基础属性 ========= -->
+	<springProperty scope="context" name="APP_NAME" source="spring.application.name"/>
+	<springProperty scope="context" name="LOG_PATH" source="logging.file.path"/>
+
+	<property name="LOG_PATTERN"
+			  value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] [%logger{50}] traceId=%X{trace_id} spanId=%X{span_id} - %msg%n"/>
+
+	<!-- ========= Console（仅 dev） ========= -->
+	<springProfile name="dev">
+		<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+			<encoder>
+				<pattern>${LOG_PATTERN}</pattern>
+			</encoder>
+		</appender>
+	</springProfile>
+
+	<!-- ========= DEBUG ========= -->
+	<appender name="DEBUG_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_PATH}/${APP_NAME}/debug.log</file>
 		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-			<fileNamePattern>${log.path}/%d{yyyy-MM, aux}/debug.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+			<fileNamePattern>${LOG_PATH}/${APP_NAME}/debug.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
 			<maxFileSize>50MB</maxFileSize>
-			<maxHistory>7</maxHistory>
+			<maxHistory>14</maxHistory>
 		</rollingPolicy>
 		<encoder>
-			<pattern>[traceId:%highlight(%X{traceId}){green}] %date [%thread] %-5level [%logger{50}] %file:%line - %msg%n</pattern>
+			<pattern>${LOG_PATTERN}</pattern>
 		</encoder>
-	</appender>
-
-	<!-- Log file error output -->
-	<appender name="error" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>${log.path}/error.log</file>
-		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-			<fileNamePattern>${log.path}/%d{yyyy-MM}/error.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
-			<maxFileSize>50MB</maxFileSize>
-			<maxHistory>7</maxHistory>
-		</rollingPolicy>
-		<encoder>
-			<pattern>[traceId:%highlight(%X{traceId}){green}] %date [%thread] %-5level [%logger{50}] %file:%line - %msg%n</pattern>
-		</encoder>
-		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-			<level>ERROR</level>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>DEBUG</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
 		</filter>
 	</appender>
 
-	<logger name="org.activiti.engine.impl.db" level="DEBUG">
-		<appender-ref ref="debug"/>
+	<!-- ========= INFO ========= -->
+	<appender name="INFO_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_PATH}/${APP_NAME}/info.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_PATH}/${APP_NAME}/info.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+			<maxFileSize>50MB</maxFileSize>
+			<maxHistory>14</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<pattern>${LOG_PATTERN}</pattern>
+		</encoder>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>INFO</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+	</appender>
+
+	<!-- ========= ERROR ========= -->
+	<appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_PATH}/${APP_NAME}/error.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<fileNamePattern>${LOG_PATH}/${APP_NAME}/error.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+			<maxFileSize>50MB</maxFileSize>
+			<maxHistory>30</maxHistory>
+		</rollingPolicy>
+		<encoder>
+			<pattern>${LOG_PATTERN}</pattern>
+		</encoder>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>ERROR</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+	</appender>
+
+	<!-- ========= 业务包：强制 DEBUG ========= -->
+	<logger name="com.yourcompany" level="DEBUG" additivity="false">
+		<appender-ref ref="DEBUG_FILE"/>
+		<appender-ref ref="INFO_FILE"/>
+		<appender-ref ref="ERROR_FILE"/>
+		<springProfile name="dev">
+			<appender-ref ref="CONSOLE"/>
+		</springProfile>
 	</logger>
 
-	<!--nacos 心跳 INFO 屏蔽-->
-	<logger name="com.alibaba.nacos" level="OFF">
-		<appender-ref ref="error"/>
-	</logger>
-	<!-- Level: FATAL 0  ERROR 3  WARN 4  INFO 6  DEBUG 7 -->
+	<!-- ========= Root ========= -->
 	<root level="INFO">
-		<appender-ref ref="console"/>
-		<appender-ref ref="debug"/>
+		<appender-ref ref="INFO_FILE"/>
+		<appender-ref ref="ERROR_FILE"/>
+		<springProfile name="dev">
+			<appender-ref ref="CONSOLE"/>
+		</springProfile>
 	</root>
+
 </configuration>
