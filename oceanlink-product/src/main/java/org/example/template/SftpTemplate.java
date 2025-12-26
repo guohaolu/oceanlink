@@ -1,4 +1,4 @@
-package org.example.util;
+package org.example.template;
 
 import com.jcraft.jsch.ChannelSftp;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +21,12 @@ import java.util.function.Function;
 public class SftpTemplate {
     private final GenericObjectPool<ChannelSftp> sftpPool;
 
+    /**
+     * 执行SFTP操作的通用方法
+     * @param action 要执行的SFTP操作函数
+     * @param <T> 返回值类型
+     * @return 操作结果
+     */
     public <T> T execute(Function<ChannelSftp, T> action) {
         ChannelSftp sftp = null;
         try {
@@ -37,6 +43,8 @@ public class SftpTemplate {
 
     /**
      * 专门给 InputStream 用（延迟归还）
+     * @param action 要执行的SFTP流操作函数
+     * @return 包装后的PooledSftpInputStream，支持延迟归还连接
      */
     public PooledSftpInputStream openStream(Function<ChannelSftp, InputStream> action) {
         ChannelSftp sftp;
@@ -49,3 +57,4 @@ public class SftpTemplate {
         }
     }
 }
+
