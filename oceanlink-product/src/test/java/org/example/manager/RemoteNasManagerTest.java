@@ -1,6 +1,7 @@
 package org.example.manager;
 
 import org.example.manager.impl.RemoteNasManager;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,12 +14,14 @@ class RemoteNasManagerTest {
     private RemoteNasManager remoteNasManager;
 
     @Test
+    @DisplayName("列出目录")
     void list() {
         List<String> list = remoteNasManager.list("/IT");
         System.out.println(list);
     }
 
     @Test
+    @DisplayName("删除文件")
     void delete() {
         List<String> paths = List.of(
                 "/IT/财务/影刀/平台/Amazon-VC/NetPPM/2025/VelwayVC-欧洲/2025-12-23/Net_PPM_ASIN_VelwayVC-欧洲_ALL_2024-01_\u200C_2025-12-23.xlsx",
