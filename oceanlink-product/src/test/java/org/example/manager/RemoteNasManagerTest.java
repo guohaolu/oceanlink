@@ -1,6 +1,7 @@
 package org.example.manager;
 
 import org.example.manager.impl.RemoteNasManager;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,5 +39,17 @@ class RemoteNasManagerTest {
         for (String path : paths) {
             remoteNasManager.delete(path);
         }
+    }
+
+    @Test
+    @DisplayName("检查文件是否存在")
+    void exists() {
+        String path = "/IT/财务/影刀/平台/Amazon-VC/NetPPM/2025/VelwayVC-欧洲/2025-12-23/Net_PPM_ASIN_VelwayVC-欧洲_NL_2024-01_\u200C_2025-12-23.xlsx";
+        boolean exists = remoteNasManager.exists(path);
+        Assertions.assertFalse(exists);
+
+        String path2 = "/IT/财务/影刀/平台/Amazon-VC/NetPPM/2025/CosylandVC-欧洲/2025-12-25/Net_PPM_ASIN_CosylandVC-欧洲_FR_2024-02_32.60%_2025-12-25.xlsx";
+        boolean exists2 = remoteNasManager.exists(path2);
+        Assertions.assertTrue(exists2);
     }
 }
