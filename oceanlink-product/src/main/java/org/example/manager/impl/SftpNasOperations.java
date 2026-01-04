@@ -12,7 +12,7 @@ import java.util.Vector;
 import java.util.stream.Collectors;
 
 /**
- * 语义层
+ * 语义层，等同于{@code Repository}
  *
  * @author guohao.lu
  */

@@ -53,6 +53,10 @@ ewayt:
       min-idle: 2
       max-wait: 10s
 
+logging:
+  file:
+    path: E:/logs
+
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

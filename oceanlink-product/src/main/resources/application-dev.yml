@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: oceanlink-product
+
+logging:
+  file:
+    path: E:/logs
