@@ -10,9 +10,28 @@ import java.io.InputStream;
 import java.util.function.Function;
 
 /**
- * 核心执行模板（borrow / return）
+ * SFTP 核心执行模板（borrow / return）。
+ *
  * <p>
- * 池感知的“安全访问层”
+ * 本类是一个<strong>池感知的安全访问模板</strong>，
+ * 负责从连接池中借出资源、执行操作，并在结束后确保资源被正确归还。
+ *
+ * <p>
+ * 其核心职责是：
+ * <ul>
+ *   <li>封装连接的借用与归还（borrow / return）流程</li>
+ *   <li>统一资源生命周期管理，防止泄漏</li>
+ *   <li>为上层提供一个安全、可复用的执行入口</li>
+ * </ul>
+ *
+ * <p>
+ * 本类<strong>不表达任何业务或文件操作语义</strong>，
+ * 也不关心调用方要执行什么具体的 SFTP 行为，
+ * 仅保证“在池的约束下，执行是安全的”。
+ *
+ * <p>
+ * 在分层结构中，本类位于基础设施与语义层之间，
+ * 是一个典型的 Template / Executor 角色。
  *
  * @author guohao.lu
  */

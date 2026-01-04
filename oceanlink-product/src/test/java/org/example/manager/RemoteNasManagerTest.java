@@ -18,8 +18,8 @@ class RemoteNasManagerTest {
 
     @Test
     @DisplayName("列出目录")
-    void list() {
-        List<String> list = remoteNasManager.list("/IT");
+    void listFiles() {
+        List<String> list = remoteNasManager.listFiles("/IT");
         System.out.println(list);
     }
 
