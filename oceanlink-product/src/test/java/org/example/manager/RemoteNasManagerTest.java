@@ -24,6 +24,22 @@ class RemoteNasManagerTest {
     }
 
     @Test
+    @DisplayName("收集目录下所有文件")
+    void collectAllFiles() {
+        String path = "/IT/财务/影刀/平台/Amazon-VC/NetPPM";
+        List<String> fileNames = remoteNasManager.collectAllFiles(path);
+        System.out.println(fileNames);
+    }
+
+    @Test
+    void deleteYearToDate() {
+        String path = "/IT/财务/影刀/平台/Amazon-VC/NetPPM";
+        List<String> fileNames = remoteNasManager.collectAllFiles(path);
+
+        List<String> yearToDateList = fileNames.stream().filter(fileName -> fileName.contains("_year-to-date_")).toList();
+    }
+
+    @Test
     @DisplayName("删除文件")
     void delete() {
         List<String> paths = List.of(

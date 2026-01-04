@@ -65,11 +65,19 @@ public class RemoteNasManager {
         return nasOperations.list(dir);
     }
 
+    /**
+     * 收集指定路径下的所有文件
+     *
+     * @param path 要遍历的目录路径
+     * @return 包含所有文件路径的字符串列表
+     */
     public List<String> collectAllFiles(String path) {
         List<String> files = new ArrayList<>();
+        // 遍历指定路径下的所有文件，并将文件路径添加到结果列表中
         nasOperations.walkFiles(path, files::add);
         return files;
     }
+
 
     /**
      * 删除指定路径的文件或目录
