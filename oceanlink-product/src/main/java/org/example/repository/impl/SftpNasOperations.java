@@ -1,9 +1,9 @@
-package org.example.manager.impl;
+package org.example.repository.impl;
 
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.SftpException;
 import lombok.extern.slf4j.Slf4j;
-import org.example.manager.NasOperations;
+import org.example.repository.NasOperations;
 import org.example.template.SftpTemplate;
 
 import java.io.InputStream;

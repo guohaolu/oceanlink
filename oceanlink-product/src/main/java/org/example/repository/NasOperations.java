@@ -1,4 +1,4 @@
-package org.example.manager;
+package org.example.repository;
 
 import java.io.InputStream;
 import java.util.List;

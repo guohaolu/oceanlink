@@ -1,10 +1,10 @@
 package org.example.repository;
 
-import com.google.common.collect.Lists;
 import org.example.handler.AsyncBatchProcessorScheduled;
 import org.example.mapper.FinanceTpWarehouseAgeCkMapper;
 import org.example.mybatis.UniqueDateTime64;
 import org.example.pojo.entity.FinanceTpWarehouseAgeEntity;
+import org.example.repository.impl.FinanceTpWarehouseAgeCkRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
