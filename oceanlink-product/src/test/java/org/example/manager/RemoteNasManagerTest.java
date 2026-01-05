@@ -1,5 +1,6 @@
 package org.example.manager;
 
+import org.apache.commons.lang3.StringUtils;
 import org.example.manager.impl.RemoteNasManager;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -9,6 +10,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @SpringBootTest
 @ActiveProfiles("dev")
@@ -32,11 +35,31 @@ class RemoteNasManagerTest {
     }
 
     @Test
+    @DisplayName("重命名文件")
+    void renameFile() {
+        String source = "/xxxs";
+        String target = "/xxxs";
+        remoteNasManager.renameFile(source, target);
+    }
+
+    @Test
     void deleteYearToDate() {
         String path = "/IT/财务/影刀/平台/Amazon-VC/NetPPM";
         List<String> fileNames = remoteNasManager.collectAllFiles(path);
 
         List<String> yearToDateList = fileNames.stream().filter(fileName -> fileName.contains("_year-to-date_")).toList();
+        Map<Integer, List<String>> countMap = yearToDateList.stream().collect(Collectors.groupingBy(fileName -> {
+            String[] split = fileName.split("/");
+            String lastPart = split[split.length - 1];
+            return StringUtils.countMatches(lastPart, "_");
+        }));
+
+        List<String> todoList = countMap.get(8);
+
+//        for (String sourceFileName : todoList) {
+//            String targetFileName = sourceFileName.replace("2025-01-2025-11", "2025-01_2025-11");
+//            remoteNasManager.renameFile(sourceFileName, targetFileName);
+//        }
     }
 
     @Test

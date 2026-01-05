@@ -72,7 +72,7 @@
 	</appender>
 
 	<!-- ========= 业务包：强制 DEBUG ========= -->
-	<logger name="com.yourcompany" level="DEBUG" additivity="false">
+	<logger name="com.example" level="DEBUG" additivity="false">
 		<appender-ref ref="DEBUG_FILE"/>
 		<appender-ref ref="INFO_FILE"/>
 		<appender-ref ref="ERROR_FILE"/>

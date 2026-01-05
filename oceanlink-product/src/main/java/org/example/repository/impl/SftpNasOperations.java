@@ -84,6 +84,18 @@ public class SftpNasOperations implements NasOperations {
     }
 
     @Override
+    public void rename(String oldPath, String newPath) {
+        sftpTemplate.execute(sftp -> {
+            try {
+                sftp.rename(oldPath, newPath);
+            } catch (SftpException e) {
+                throw new RuntimeException("Rename failed: " + oldPath + " -> " + newPath, e);
+            }
+            return null;
+        });
+    }
+
+    @Override
     public void delete(String path) {
         sftpTemplate.execute(sftp -> {
             try {

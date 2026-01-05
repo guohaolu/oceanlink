@@ -78,6 +78,22 @@ public class RemoteNasManager {
         return files;
     }
 
+    /**
+     * 重命名文件
+     *
+     * @param oldPath 原文件路径
+     * @param newPath 新文件路径
+     * @throws RuntimeException 当原文件不存在时抛出异常
+     */
+    public void renameFile(String oldPath, String newPath) {
+        // 检查原文件是否存在
+        boolean isExist = nasOperations.exists(oldPath);
+        if (!isExist) {
+            throw new RuntimeException("原文件不存在");
+        }
+        // 执行文件重命名操作
+        nasOperations.rename(oldPath, newPath);
+    }
 
     /**
      * 删除指定路径的文件或目录

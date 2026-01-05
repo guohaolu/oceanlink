@@ -49,6 +49,14 @@ public interface NasOperations {
     boolean exists(String path);
 
     /**
+     * 重命名指定路径的文件或目录
+     *
+     * @param oldPath 旧路径
+     * @param newPath 新路径
+     */
+    void rename(String oldPath, String newPath);
+
+    /**
      * 删除指定路径的文件或目录
      *
      * @param path 要删除的文件或目录路径
