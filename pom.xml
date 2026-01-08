@@ -16,6 +16,7 @@
     <module>oceanlink-api</module>
     <module>oceanlink-common</module>
     <module>oceanlink-gateway</module>
+    <module>oceanlink-cache-pipeline</module>
   </modules>
 
   <properties>

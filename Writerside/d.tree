@@ -7,4 +7,6 @@
                  start-page="starter-topic.md">
 
     <toc-element topic="starter-topic.md"/>
+    <toc-element topic="基于gitlab的平台级流水线.md"/>
+    <toc-element topic="基于Money.md"/>
 </instance-profile>
