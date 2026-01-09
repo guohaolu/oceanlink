@@ -50,8 +50,6 @@ public class AsyncInsertClickhouse extends AbstractMethod {
 
         SqlSource sqlSource = super.createSqlSource(configuration, sql.formatted(table, columnScript, valuesScript), modelClass);
 
-        log.info(sql.formatted(table, columnScript, valuesScript));
-
         // 第三个参数必须和baseMapper的自定义方法名一致
         return this.addInsertMappedStatement(mapperClass, modelClass, this.methodName, sqlSource, NoKeyGenerator.INSTANCE, null, null);
     }
