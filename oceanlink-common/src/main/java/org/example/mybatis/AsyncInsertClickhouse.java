@@ -14,7 +14,7 @@ import java.util.Objects;
 import static java.util.stream.Collectors.joining;
 
 /**
- * Clickhouse异步插入
+ * Clickhouse异步插入, 暂时不可用
  *
  * @author guohao.lu
  */

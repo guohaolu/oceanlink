@@ -141,8 +141,7 @@
 		</filter>
 	</appender>
 
-	<logger name="com.clickhouse.jdbc.ClickHouseDriver" level="WARN">
-	</logger>
+	<logger name="com.clickhouse.jdbc.ClickHouseDriver" level="WARN"/>
 
 	<!--
         root节点是必选节点，用来指定最基础的日志输出级别，只有一个level属性
