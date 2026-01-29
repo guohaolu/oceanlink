@@ -32,7 +32,9 @@ public class RuleManagerImpl implements IRuleManager {
                 .orderByAsc(ExpressionRuleNodeEntity::getSortOrder)
         );
         
-        if (nodes.isEmpty()) return null;
+        if (nodes.isEmpty()) {
+            return null;
+        }
 
         // 构建 ID 到 DTO 的映射
         Map<Long, RuleNodeDTO> dtoMap = nodes.stream().collect(Collectors.toMap(

@@ -7,6 +7,9 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * @author guohao.lu
+ */
 @Component
 public class RuleExecutor {
 
