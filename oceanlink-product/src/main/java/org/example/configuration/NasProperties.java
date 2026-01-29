@@ -6,6 +6,13 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import java.time.Duration;
 
 /**
+ * NAS 配置属性类。
+ *
+ * <p>
+ * 该类用于绑定配置文件中的 NAS 相关属性，并提供 getter / setter 方法进行访问。
+ *
+ * <p>
+ * 配置属性前缀为 {@code ewayt.nas}。
  * @author guohao.lu
  */
 @Data
