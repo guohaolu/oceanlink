@@ -6,6 +6,8 @@ import org.example.pojo.dto.StudentDTO;
 import org.example.support.RuleContext;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 import javax.annotation.Resource;
 
 /**
@@ -19,6 +21,8 @@ public class StudentSelectionService {
     private IRuleManager ruleManager;
     @Resource
     private RuleExecutor ruleExecutor;
+    @Resource
+    private RuleMappingService ruleMappingService;
 
     public void processStudent(Long ruleId, StudentDTO student) {
         // 1. 加载规则树
@@ -36,6 +40,32 @@ public class StudentSelectionService {
 
         if (isMatch) {
             System.out.println("该数据命中规则！");
+        }
+    }
+
+    public void processStudent2(StudentDTO student) {
+        // 1. 构建通用上下文
+        RuleContext context = new RuleContext();
+        context.put("score", student.getScore());
+        context.put("major", student.getMajor());
+        context.put("grade", student.getGrade());
+
+        // 2. 调用规则映射服务获取结果
+        // 场景：根据成绩和专业映射出 “学生标签” 和 “推荐课程列表”
+        Map<String, Object> result = ruleMappingService.match(
+            "TENANT_001", 
+            "STUDENT_TAGGING", 
+            context
+        );
+
+        if (!result.isEmpty()) {
+            // 3. 解析结果
+            String cat1 = (String) result.get("category1");
+            List<String> tags = (List<String>) result.get("tags");
+            
+            System.out.println("匹配成功！一级分类：" + cat1 + "，标签：" + tags);
+        } else {
+            System.out.println("未命中任何匹配规则");
         }
     }
 }

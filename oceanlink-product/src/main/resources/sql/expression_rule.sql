@@ -3,12 +3,14 @@ CREATE TABLE `expression_rule` (
     `tenant_id` VARCHAR(50) NOT NULL COMMENT '租户ID',
     `rule_name` VARCHAR(100) NOT NULL COMMENT '规则名称',
     `report_type` VARCHAR(50) NOT NULL COMMENT '报表类型/业务类型',
+    `priority` INT NOT NULL DEFAULT 0 COMMENT '优先级（数值越大越优先匹配）',
+    `result_config` JSON DEFAULT NULL COMMENT '命中后的结果配置：支持JSON对象、列表或简单值',
     `description` VARCHAR(255) DEFAULT NULL COMMENT '描述',
     `status` TINYINT NOT NULL DEFAULT 1 COMMENT '状态：0-禁用，1-启用',
     `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (`id`),
-    INDEX `idx_tenant_report` (`tenant_id`, `report_type`)
+    INDEX `idx_tenant_report` (`tenant_id`, `report_type`, `priority` DESC)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='表达式规则定义表';
 
 CREATE TABLE `expression_rule_node` (
