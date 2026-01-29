@@ -9,4 +9,7 @@ import lombok.Data;
 public class StudentDTO {
     private String name;
     private Integer age;
+    private Integer score;
+    private String major;
+    private String grade;
 }
