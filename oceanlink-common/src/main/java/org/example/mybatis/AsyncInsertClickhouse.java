@@ -14,7 +14,7 @@ import java.util.Objects;
 import static java.util.stream.Collectors.joining;
 
 /**
- * Clickhouse异步插入
+ * Clickhouse异步插入, 暂时不可用
  *
  * @author guohao.lu
  */
@@ -29,7 +29,7 @@ public class AsyncInsertClickhouse extends AbstractMethod {
         // SETTINGS async_insert=1, wait_for_async_insert=1
         String sql = """
                 <script>
-                INSERT INTO %s %s SETTINGS async_insert=1, wait_for_async_insert=1 VALUES %s
+                INSERT INTO %s %s VALUES %s
                 </script>
                 """;
 
@@ -49,8 +49,6 @@ public class AsyncInsertClickhouse extends AbstractMethod {
         String valuesScript = SqlScriptUtils.convertForeach(valueTrim, COLL, null, ENTITY, COMMA);
 
         SqlSource sqlSource = super.createSqlSource(configuration, sql.formatted(table, columnScript, valuesScript), modelClass);
-
-        log.info(sql.formatted(table, columnScript, valuesScript));
 
         // 第三个参数必须和baseMapper的自定义方法名一致
         return this.addInsertMappedStatement(mapperClass, modelClass, this.methodName, sqlSource, NoKeyGenerator.INSTANCE, null, null);

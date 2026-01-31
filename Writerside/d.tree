@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE instance-profile
+        SYSTEM "https://resources.jetbrains.com/writerside/1.0/product-profile.dtd">
+
+<instance-profile id="d"
+                 name="doc"
+                 start-page="starter-topic.md">
+
+    <toc-element topic="树形结构表达式规则设计.md"/>
+    <toc-element topic="skills-项目开发规范.md"/>
+    <toc-element topic="starter-topic.md"/>
+    <toc-element topic="基于gitlab的平台级流水线.md"/>
+    <toc-element topic="基于Money.md"/>
+</instance-profile>

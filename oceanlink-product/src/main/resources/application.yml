@@ -1,6 +1,19 @@
 spring:
   application:
     name: oceanlink-product
+  cloud:
+    nacos:
+      username: nacos
+      password: nacos
+      discovery:
+        server-addr: ${NACOS_HOST:ewayt-register}:${NACOS_PORT:8848}
+        weight: 1000
+      config:
+        server-addr: ${NACOS_HOST:ewayt-register}:${NACOS_PORT:8848}
+  config:
+    import:
+#      - optional:nacos:application-dev.yml
+#      - optional:nacos:ewayt-finance-dev.yml
   datasource:
     dynamic:
       primary: mysql
@@ -18,6 +31,7 @@ spring:
             minimum-idle: 5
             idle-timeout: 30_000
             max-lifetime: 60_000
+          pool-name: Druid-mysql
         clickhouse:
           url: jdbc:clickhouse:http://172.16.13.244:8123/oceanlink_product
           username: default
@@ -33,9 +47,27 @@ spring:
             idle-timeout: 30_000
             max-lifetime: 60_000
 
+ewayt:
+  nas:
+    host: 172.16.2.222
+    port: 22
+    username: it_finance
+    password: QR7^?sv3
+    remote-dir: /IT/财务/基础数据
+    local-dir: /data/upload_tmp/report
+    pool:
+      max-total: 8
+      max-idle: 8
+      min-idle: 2
+      max-wait: 10s
+
+logging:
+  file:
+    path: E:/logs
+
 mybatis-plus:
   configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
 
 seata:
   enabled: false

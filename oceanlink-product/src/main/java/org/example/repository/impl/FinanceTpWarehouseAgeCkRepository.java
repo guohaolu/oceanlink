@@ -1,4 +1,4 @@
-package org.example.repository;
+package org.example.repository.impl;
 
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;

@@ -168,7 +168,7 @@ public class AsyncBatchProcessorScheduled<M extends BaseMapper<T>, T> {
      */
     private void insertToDatabase(List<T> batchData) {
         try {
-            repository.getBaseMapper().insert(batchData);
+            repository.getBaseMapper().insert(batchData, BATCH_SIZE);
         } catch (Exception e) {
             log.error("数据库插入异常: {}", e.getMessage(), e);
             // 注意：这里如果重新加入队列，需要在同步块内操作

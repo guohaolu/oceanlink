@@ -16,6 +16,7 @@
     <module>oceanlink-api</module>
     <module>oceanlink-common</module>
     <module>oceanlink-gateway</module>
+    <module>oceanlink-cache-pipeline</module>
   </modules>
 
   <properties>
@@ -152,7 +153,6 @@
       <groupId>com.alibaba.cloud</groupId>
       <artifactId>spring-cloud-starter-alibaba-seata</artifactId>
     </dependency>
-
 
     <!--mybatis-->
     <dependency>

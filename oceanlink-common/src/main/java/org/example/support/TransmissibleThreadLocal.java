@@ -1,8 +1,4 @@
-package org.example;
-
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+package org.example.support;
 
 /**
  * 跨线程ThreadLocal实现

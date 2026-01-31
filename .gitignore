@@ -24,6 +24,7 @@ modules.xml
 
 # 日志文件
 *.log
+*.log.gz
 logs/
 
 # BlueJ文件

@@ -8,7 +8,7 @@ import org.apache.ibatis.session.Configuration;
 import java.util.List;
 
 /**
- * ClickHouseSqlInjector
+ * ClickHouse-SQL注入器
  *
  * @author guohao.lu
  */

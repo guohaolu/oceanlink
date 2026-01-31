@@ -42,5 +42,18 @@
       <artifactId>clickhouse-jdbc</artifactId>
       <classifier>all</classifier>
     </dependency>
+    <!-- mybatis-plus-generator -->
+    <dependency>
+      <groupId>com.baomidou</groupId>
+      <artifactId>mybatis-plus-generator</artifactId>
+      <version>${mybatis-plus.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.jcraft</groupId>
+      <artifactId>jsch</artifactId>
+      <version>0.1.55</version>
+    </dependency>
   </dependencies>
 </project>
