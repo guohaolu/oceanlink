@@ -151,7 +151,7 @@
         可以包含零个或多个元素，标识这个appender将会添加到这个logger。
     -->
 	<root level="info">
-<!--		<appender-ref ref="CONSOLE"/>-->
+		<appender-ref ref="CONSOLE"/>
 		<appender-ref ref="STDOUT"/>
 		<!--<appender-ref ref="DEBUG_FILE" />-->
 		<appender-ref ref="INFO_FILE"/>
