@@ -30,8 +30,7 @@ public class AsyncInsertClickhouse extends AbstractMethod {
         // 1. 定义 SQL 模板，使用 /*mp:ignore*/ 绕过 MP 拦截器的语法检查
         String sql = """
                 <script>
-                /*mp:ignore*/
-                INSERT INTO %s %s SETTINGS async_insert=1, wait_for_async_insert=1 VALUES %s
+                INSERT INTO %s SETTINGS async_insert=1, wait_for_async_insert=1 %s VALUES %s
                 </script>
                 """;
 

@@ -1,9 +1,11 @@
 package org.example.pojo.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.ibatis.type.JdbcType;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -17,11 +19,12 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName(value = "finance_tp_warehouse_age_t")
+@TableName(value = "finance_tp_warehouse_age_t", autoResultMap = true)
 public class FinanceTpWarehouseAgeEntity {
     /**
      * 报表日期
      */
+    @TableField(value = "report_date", jdbcType = JdbcType.DATE)
     private LocalDate reportDate;
 
     /**

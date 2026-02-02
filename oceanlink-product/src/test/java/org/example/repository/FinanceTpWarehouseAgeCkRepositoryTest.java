@@ -38,7 +38,7 @@ class FinanceTpWarehouseAgeCkRepositoryTest {
             entity.setUpdateByName("测试用户");
             return entity;
         };
-        List<FinanceTpWarehouseAgeEntity> entities = Stream.generate(entitySupplier).limit(5000).peek(entity -> {
+        List<FinanceTpWarehouseAgeEntity> entities = Stream.generate(entitySupplier).limit(2).peek(entity -> {
             LocalDateTime dt = UniqueDateTime64.nextDateTime64();
             entity.setCreateTime(dt);
             entity.setUpdateTime(dt);

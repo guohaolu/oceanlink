@@ -23,14 +23,6 @@ spring:
           username: readonly_user
           password: gh@NB123456
           driver-class-name: com.mysql.cj.jdbc.Driver
-          pool-name: HikariPool-clickhouse
-          hikari:
-            connection-timeout: 3_000
-            validation-timeout: 3_000
-            maximum-pool-size: 20
-            minimum-idle: 5
-            idle-timeout: 30_000
-            max-lifetime: 60_000
           pool-name: Druid-mysql
         clickhouse:
           url: jdbc:clickhouse:http://172.16.13.244:8123/oceanlink_product
