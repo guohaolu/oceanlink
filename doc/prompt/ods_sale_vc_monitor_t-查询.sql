@@ -1,215 +1,284 @@
-WITH
-    #{query.currency} AS selected_currency,
-    formatDateTime(today(), '%Y-%m-%d') AS today_str,
-
-        exchange_rates AS (
-        SELECT
-        month,
-        currency_code,
-        coalesce(average_median_price, 1) as rate
-        FROM sys_currency_rate_mysql_t
-        WHERE currency_code = selected_currency
-        AND del_flag = '0'
-        AND month >= '0000-00'
-        AND month &lt;= '9999-99'
-        AND month like '____-__'
-        ORDER BY month DESC
-        LIMIT 1 BY month, currency_code
-        ),
-
-        base_data AS (
-        SELECT
-        sku_id,
-        sku_code,
-        team_id,
-        store_id,
-        market_code,
-        sale_duty_uid,
-        sku_category_id,
-        sku_name,
-        team_name,
-        store_name,
-        market_name,
-        asin,
-        parent_asin,
-        msku_code,
-        sale_duty_uname,
-        product_title,
-        sku_category_name,
-
-        month_date,
-        date_time,
-
-        ordered_units,
-        shipped_units,
-        customer_returns,
-        glance_views,
-
-        ordered_revenue_amount / coalesce(r.rate, 1.0) AS ordered_revenue_converted,
-        shipped_revenue_amount / coalesce(r.rate, 1.0) AS shipped_revenue_converted,
-        shipped_cogs_amount / coalesce(r.rate, 1.0) AS shipped_cogs_converted,
-        sales_cost / coalesce(r.rate, 1.0) AS sales_cost_converted,
-        inventory_cost / coalesce(r.rate, 1.0) AS inventory_cost_converted,
-        procurement_cost / coalesce(r.rate, 1.0) AS procurement_cost_converted,
-        sales_commission / coalesce(r.rate, 1.0) AS sales_commission_converted,
-        advertising_fee / coalesce(r.rate, 1.0) AS advertising_fee_converted,
-        storage_fee / coalesce(r.rate, 1.0) AS storage_fee_converted,
-        compliance_fee / coalesce(r.rate, 1.0) AS compliance_fee_converted,
-        shipping_fee / coalesce(r.rate, 1.0) AS shipping_fee_converted,
-        net_ppm,
-
-        ordered_revenue_amount,
-        shipped_revenue_amount,
-        shipped_cogs_amount
-
-        FROM ods_sale_vc_monitor_t t
-        LEFT JOIN exchange_rates r ON r.month = t.month_date
-        WHERE multiIf(
-        date_time = (SELECT today_str) AND data_type = 1, 1,
-        date_time &lt; (SELECT today_str) AND data_type = 2, 1,
-        0
-        ) = 1
-        ),
-
-        date_series AS (
-        SELECT
-        toDate(today_str) - 27 + number AS date
-        FROM numbers(28)
-        ),
-
-        group_table AS (select
-        sku_id,
-        sku_code,
-        team_id,
-        store_id,
-        market_code,
-        sale_duty_uid,
-        sku_category_id,
-        sku_name,
-        team_name,
-        store_name,
-        market_name,
-        asin,
-        parent_asin,
-        msku_code,
-        sale_duty_uname,
-        product_title,
-        sku_category_name,
-
-        ifNull(sum(ordered_units), 0) AS ordered_units,
-        ifNull(sum(shipped_units), 0) AS shipped_units,
-        ifNull(sum(customer_returns), 0) AS customer_returns,
-        ifNull(sum(glance_views), 0) AS glance_views,
-        ifNull(sum(ordered_revenue_converted), 0) AS ordered_revenue_amount,
-        ifNull(sum(shipped_revenue_converted), 0) AS shipped_revenue_amount,
-        ifNull(sum(shipped_cogs_converted), 0) AS shipped_cogs_amount,
-        ifNull(sum(sales_cost_converted), 0) AS sales_cost,
-        ifNull(sum(inventory_cost_converted), 0) AS inventory_cost,
-        ifNull(sum(procurement_cost_converted), 0) AS procurement_cost,
-        ifNull(sum(sales_commission_converted), 0) AS sales_commission,
-        ifNull(sum(advertising_fee_converted), 0) AS advertising_fee,
-        ifNull(sum(storage_fee_converted), 0) AS storage_fee,
-        ifNull(sum(compliance_fee_converted), 0) AS compliance_fee,
-        ifNull(sum(shipping_fee_converted), 0) AS shipping_fee,
-        ifNull(sum(net_ppm), 0) AS net_ppm,
-        multiIf(ifNull(sum(base_data.ordered_units), 0) == 0, 0, ifNull(sum(base_data.ordered_revenue_converted), 0) / ifNull(sum(base_data.ordered_units), 0)) AS averageUnitPrice,
-        multiIf(ifNull(sum(base_data.glance_views), 0) == 0, 0, ifNull(sum(base_data.ordered_units), 0) / ifNull(sum(base_data.glance_views), 0)) AS conversionRate,
-        sales_commission + ordered_revenue_amount + compliance_fee AS amazonVCRevenue,
-        procurement_cost + inventory_cost AS productCost,
-        sales_commission + advertising_fee + compliance_fee AS platformFee,
-        amazonVCRevenue + productCost + shipping_fee + storage_fee AS totalCost,
-        shipped_revenue_amount - totalCost AS grossProfit,
-        multiIf(shipped_revenue_amount == 0, 0, grossProfit / shipped_revenue_amount) AS grossProfitMargin
-
-        from base_data
-        group by
-        sku_id,
-        sku_code,
-        team_id,
-        store_id,
-        market_code,
-        sale_duty_uid,
-        sku_category_id,
-        sku_name, team_name, store_name, market_name, asin, parent_asin,
-        msku_code, sale_duty_uname, product_title, sku_category_name)
-
-select * from group_table;
-
--- auto-generated definition
-create table ods_sale_vc_monitor_t
-(
-    id                     UInt64 comment '主键ID',
-    store_id               UInt64 comment '店铺ID',
-    store_name             LowCardinality(String) comment '店铺名称',
-    market_id              Int8 comment '市场ID',
-    market_code            LowCardinality(String) comment '市场编码',
-    market_name            LowCardinality(String) comment '市场名称/平台名称',
-    asin                   String comment '产品ASIN',
-    distributor_view       LowCardinality(String) comment '视图类型 MANUFACTURING, SOURCING',
-    parent_asin            String comment '父ASIN',
-    pic_url                String comment '产品图片URL',
-    msku_code              String comment 'MSKU编码',
-    product_title          String comment '产品标题',
-    sku_id                 Nullable(UInt64) comment 'SKU ID',
-    sku_code               String comment 'SKU编码',
-    sku_name               String comment 'SKU名称',
-    sku_category_id        Nullable(UInt64) comment 'SKU分类ID',
-    sku_category_name      LowCardinality(String) comment 'SKU分类名称',
-    team_id                Nullable(UInt64) comment '团队ID',
-    team_name              LowCardinality(String) comment '团队名称',
-    sale_duty_uid          UInt64 comment '销售负责人ID',
-    sale_duty_uname        String comment '销售负责人姓名',
-    ordered_units          Int32 comment '销量',
-    shipped_units          Int32 comment '出货数量',
-    customer_returns       Int32 comment '退货数量',
-    glance_views           Int32 comment '访问量',
-    ordered_revenue_amount Decimal(20, 8) comment '销售额',
-    shipped_revenue_amount Decimal(20, 8) comment '收入',
-    shipped_cogs_amount    Decimal(20, 8) comment '出货成本金额',
-    sales_cost             Decimal(20, 8) comment '销售成本',
-    inventory_cost         Decimal(20, 8) comment '到库成本',
-    procurement_cost       Decimal(20, 8) comment '采购成本',
-    sales_commission       Decimal(20, 8) comment '销售佣金',
-    advertising_fee        Decimal(20, 8) comment '广告费',
-    storage_fee            Decimal(20, 8) comment '仓储费',
-    compliance_fee         Decimal(20, 8) comment '活动费',
-    shipping_fee           Decimal(20, 8) comment '配送费',
-    net_ppm                Decimal(10, 6) comment 'NET PPM指标',
-    hour_timestamp         Nullable(Int64) comment '小时时间戳(秒级)',
-    hour_time              String comment '小时时间字符串',
-    date_timestamp         Int64 comment '日期时间戳(秒级)',
-    date_time              String comment '日期时间字符串',
-    month_date             String comment '月份字符串',
-    calc_date              String comment '统计日期_站点时间',
-    calc_start_time_site   String comment '统计开始时间_站点时间',
-    calc_end_time_site     String comment '统计结束时间_站点时间',
-    calc_start_time_bj     String comment '统计开始时间_北京时间',
-    calc_end_time_bj       String comment '统计结束时间_北京时间',
-    start_time_utc         Nullable(String) comment '统计结束时间_UTC时间',
-    end_time_utc           Nullable(String) comment '统计结束时间_UTC时间',
-    data_type              UInt8 comment '数据维度类型: 1=小时维度, 2=日维度',
-    has_hourly_data        UInt8                  default 0 comment '当天是否有小时数据: 0=无, 1=有',
-    has_daily_data         UInt8                  default 0 comment '当天是否有日数据: 0=无, 1=有',
-    data_priority          UInt8                  default 1 comment '数据优先级: 1=小时优先, 2=日优先',
-    data_completeness      LowCardinality(String) default 'COMPLETE' comment '数据完整性: COMPLETE=完整, PARTIAL=部分, ESTIMATED=估算',
-    source_table           LowCardinality(String) comment '来源表: hours/daily',
-    create_time            DateTime comment '创建时间',
-
-    update_time            DateTime comment '更新时间',
-    create_by              String comment '创建人',
-    update_by              String comment '更新人',
-    tenant_id              UInt64                 default 1 comment '租户ID',
-    _version               UInt64                 default toUnixTimestamp64Milli(now64()) comment '数据版本号(毫秒时间戳)，用于ReplacingMergeTree去重',
-    _is_deleted            UInt8                  default 0 comment '逻辑删除标记：0-有效 1-删除'
-)
-    engine = ReplacingMergeTree(_version, _is_deleted)
-    PARTITION BY (tenant_id, toYYYYMM(toDate(date_timestamp / 1000)))
-        ORDER BY (data_type, distributor_view, store_id, market_id, asin, calc_end_time_site)
-        SETTINGS index_granularity = 8192, allow_nullable_key = 1
-        COMMENT 'VC销售数据监控表(MSKU级别)-本地物理表' comment 'VC销售数据监控表(MSKU级别)-本地物理表';
-
-
-
-prompt：这个sql是用于对ods_sale_vc_monitor_t分组聚合，其中金额汇总的时候需要做汇率转换，我觉得这种汇率转换的方案可行但是有缺陷，
-我的理解是应该按月分组先聚合一下，然后把不同月份的转换后的金额合并在一起。另一个问题是，我有一个date_series，用来表示最近28天的日期，格式为yyyy-MM，
-我希望分组聚合后的数据可以带有一个array字段，用于展示最近28天的销量。
+WITH exchange_rates AS (SELECT month, currency_code, coalesce(average_median_price, 1) as rate
+                        FROM sys_currency_rate_mysql_t
+                        WHERE currency_code = 'CNY'
+                          AND del_flag = '0'
+                          AND month >= '0000-00'
+                          AND month <= '9999-99'
+                          AND month like '____-__'
+                        ORDER BY month DESC
+                        LIMIT 1 BY month, currency_code),
+    base_data AS (SELECT month,
+    month_day,
+    date,
+    team_id,
+    team_code,
+    team_name,
+    platform_id,
+    platform_name,
+    store_id,
+    store_code,
+    store_name,
+    market_id,
+    market_code,
+    market_name,
+    team_leader,
+    sale_responsible,
+    good_title,
+    msku,
+    asin,
+    sku_name,
+    sku_code,
+    asin_url,
+    sku_id,
+    sku_type,
+    sku_category_id,
+    sku_category_name,
+    three_category_id,
+    three_category_name,
+    brand_id,
+    brand_name,
+    shelf_time,
+    opening_time,
+    currency,
+    sales_volume,
+    fba_sales_volume,
+    fbm_sales_volume,
+    channel_sales_volume,
+    liquidation_sales_volume,
+    compensate_amount,
+    refund_amount,
+    fba_refund_amount,
+    fbm_refund_amount,
+    divide(sales_revenue, coalesce(er.rate, 1))                               AS sales_revenue,
+    divide(fba_sales_revenue, coalesce(er.rate, 1))                           AS fba_sales_revenue,
+    divide(fbm_sales_revenue, coalesce(er.rate, 1))                           AS fbm_sales_revenue,
+    divide(other_income, coalesce(er.rate, 1))                                AS other_income,
+    divide(promotional_discount, coalesce(er.rate, 1))                        AS promotional_discount,
+    divide(buyer_ship_cost, coalesce(er.rate, 1))                             AS buyer_ship_cost,
+    divide(gift_package_fee, coalesce(er.rate, 1))                            AS gift_package_fee,
+    divide(clear_income, coalesce(er.rate, 1))                                AS clear_income,
+    divide(return_sale_revenue, coalesce(er.rate, 1))                         AS return_sale_revenue,
+    divide(refunds_other_income, coalesce(er.rate, 1))                        AS refunds_other_income,
+    divide(refund_buyer_ship, coalesce(er.rate, 1))                           AS refund_buyer_ship,
+    divide(refund_gift_package_fee, coalesce(er.rate, 1))                     AS refund_gift_package_fee,
+    divide(refunds_promotional_discounts, coalesce(er.rate, 1))               AS refunds_promotional_discounts,
+    divide(refund_commission, coalesce(er.rate, 1))                           AS refund_commission,
+    divide(refund_fba_delivery_fee, coalesce(er.rate, 1))                     AS refund_fba_delivery_fee,
+    divide(refund_point, coalesce(er.rate, 1))                                AS refund_point,
+    divide(refund_other_transaction_expenses, coalesce(er.rate, 1))           AS refund_other_transaction_expenses,
+    divide(refund_other_expenses, coalesce(er.rate, 1))                       AS refund_other_expenses,
+    divide(sale_commission, coalesce(er.rate, 1))                             AS sale_commission,
+    divide(delivery_fee, coalesce(er.rate, 1))                                AS delivery_fee,
+    divide(fba_delivery_fee, coalesce(er.rate, 1))                            AS fba_delivery_fee,
+    divide(additional_orders_channel_fba_delivery_fees,
+    coalesce(er.rate, 1))                                              AS additional_orders_channel_fba_delivery_fees,
+    divide(cost_adjustment, coalesce(er.rate, 1))                             AS cost_adjustment,
+    divide(storage_fee, coalesce(er.rate, 1))                                 AS storage_fee,
+    divide(other_expenses, coalesce(er.rate, 1))                              AS other_expenses,
+    divide(return_process_fee, coalesce(er.rate, 1))                          AS return_process_fee,
+    divide(pre_process_fee, coalesce(er.rate, 1))                             AS pre_process_fee,
+    divide(unplanned_service_fee, coalesce(er.rate, 1))                       AS unplanned_service_fee,
+    divide(other_storage_fee, coalesce(er.rate, 1))                           AS other_storage_fee,
+    divide(vine_order, coalesce(er.rate, 1))                                  AS vine_order,
+    divide(integral, coalesce(er.rate, 1))                                    AS integral,
+    divide(account_manager_fee, coalesce(er.rate, 1))                         AS account_manager_fee,
+    divide(secondary_resale_fee, coalesce(er.rate, 1))                        AS secondary_resale_fee,
+    divide(other_transaction_cost, coalesce(er.rate, 1))                      AS other_transaction_cost,
+    divide(other_platform_expenses, coalesce(er.rate, 1))                     AS other_platform_expenses,
+    divide(commodity_price_tax, coalesce(er.rate, 1))                         AS commodity_price_tax,
+    divide(promotion_discount_tax, coalesce(er.rate, 1))                      AS promotion_discount_tax,
+    divide(buyer_freight_tax, coalesce(er.rate, 1))                           AS buyer_freight_tax,
+    divide(gift_package_tax, coalesce(er.rate, 1))                            AS gift_package_tax,
+    divide(market_withhold_tax, coalesce(er.rate, 1))                         AS market_withhold_tax,
+    divide(other_tax_amount, coalesce(er.rate, 1))                            AS other_tax_amount,
+    divide(sales_tax_rebate, coalesce(er.rate, 1))                            AS sales_tax_rebate,
+    divide(refund_tax_commodity_price_tax, coalesce(er.rate, 1))              AS refund_tax_commodity_price_tax,
+    divide(refund_tax_promotion_discount_tax, coalesce(er.rate, 1))           AS refund_tax_promotion_discount_tax,
+    divide(refund_tax_buyer_freight_tax, coalesce(er.rate, 1))                AS refund_tax_buyer_freight_tax,
+    divide(refund_tax_gift_package_tax, coalesce(er.rate, 1))                 AS refund_tax_gift_package_tax,
+    divide(refund_tax_market_withhold_tax, coalesce(er.rate, 1))              AS refund_tax_market_withhold_tax,
+    divide(procurement_cost, coalesce(er.rate, 1))                            AS procurement_cost,
+    divide(inventory_cost, coalesce(er.rate, 1))                              AS inventory_cost,
+    divide(other_offline_expenses, coalesce(er.rate, 1))                      AS other_offline_expenses,
+    divide(compensate, coalesce(er.rate, 1))                                  AS compensate,
+    divide(compensation_income, coalesce(er.rate, 1))                         AS compensation_income,
+    divide(compensate_adjustment, coalesce(er.rate, 1))                       AS compensate_adjustment,
+    divide(advertising_expenses, coalesce(er.rate, 1))                        AS advertising_expenses,
+    divide(monthly_storage_fee, coalesce(er.rate, 1))                         AS monthly_storage_fee,
+    divide(long_term_storage_fee, coalesce(er.rate, 1))                       AS long_term_storage_fee,
+    divide(report_monthly_storage_fee, coalesce(er.rate, 1))                  AS report_monthly_storage_fee,
+    divide(report_long_term_storage_fee, coalesce(er.rate, 1))                AS report_long_term_storage_fee,
+    divide(excess_storage_fee, coalesce(er.rate, 1))                          AS excess_storage_fee,
+    divide(warehouse_consolidation_fee, coalesce(er.rate, 1))                 AS warehouse_consolidation_fee,
+    divide(inventory_removal_disposal_fee, coalesce(er.rate, 1))              AS inventory_removal_disposal_fee,
+    divide(amazon_logistics_carrier_fee, coalesce(er.rate, 1))                AS amazon_logistics_carrier_fee,
+    divide(awd_wh_charges, coalesce(er.rate, 1))                              AS awd_wh_charges,
+    divide(awd_storage_fee, coalesce(er.rate, 1))                             AS awd_storage_fee,
+    divide(awd_operating_cost, coalesce(er.rate, 1))                          AS awd_operating_cost,
+    divide(awd_delivery_charge, coalesce(er.rate, 1))                         AS awd_delivery_charge,
+    divide(deal, coalesce(er.rate, 1))                                        AS deal,
+    divide(coupon, coalesce(er.rate, 1))                                      AS coupon,
+    divide(subscription_fee, coalesce(er.rate, 1))                            AS subscription_fee,
+    divide(atoz_complaint_fee, coalesce(er.rate, 1))                          AS atoz_complaint_fee,
+    divide(liquidation_fee, coalesce(er.rate, 1))                             AS liquidation_fee,
+    divide(other_unclassified_expenses, coalesce(er.rate, 1))                 AS other_unclassified_expenses,
+    divide(clear_market_withhold_tax, coalesce(er.rate, 1))                   AS clear_market_withhold_tax,
+    divide(clear_sale_revenue, coalesce(er.rate, 1))                          AS clear_sale_revenue,
+    divide(value_added_tax, coalesce(er.rate, 1))                             AS value_added_tax,
+    divide(order_cost, coalesce(er.rate, 1))                                  AS order_cost
+FROM finance_platform_profit_item_t fppit final
+    LEFT JOIN exchange_rates er ON er.month = fppit.month
+WHERE del_flag = '0'
+  and ((platform_id = 1 and store_id = 1788840085759098881 and market_id = 10))
+  and month_day between '2025-12-17' and '2025-12-17'),
+    aggregated_data AS (SELECT any(month)                                                 as month,
+    any(date)                                                  as date,
+    team_id,
+    any(team_code)                                             as team_code,
+    any(team_name)                                             as team_name,
+    platform_id,
+    any(platform_name)                                         as platform_name,
+    store_id,
+    any(store_code)                                            as store_code,
+    any(store_name)                                            as store_name,
+    market_id,
+    any(market_code)                                           as market_code,
+    any(market_name)                                           as market_name,
+    any(team_leader)                                           as team_leader,
+    any(currency)                                              as currency,
+    sale_responsible,
+    sum(sales_volume)                                          as sales_volume,
+    sum(fba_sales_volume)                                      as fba_sales_volume,
+    sum(fbm_sales_volume)                                      as fbm_sales_volume,
+    sum(channel_sales_volume)                                  as channel_sales_volume,
+    sum(liquidation_sales_volume)                              as liquidation_sales_volume,
+    sum(compensate_amount)                                     as compensate_amount,
+    sum(refund_amount)                                         as refund_amount,
+    sum(fba_refund_amount)                                     as fba_refund_amount,
+    sum(fbm_refund_amount)                                     as fbm_refund_amount,
+    round(sum(sales_revenue), 2)                               as sales_revenue,
+    round(sum(fba_sales_revenue), 2)                           as fba_sales_revenue,
+    round(sum(fbm_sales_revenue), 2)                           as fbm_sales_revenue,
+    round(sum(other_income), 2)                                as other_income,
+    round(sum(promotional_discount), 2)                        as promotional_discount,
+    round(sum(buyer_ship_cost), 2)                             as buyer_ship_cost,
+    round(sum(gift_package_fee), 2)                            as gift_package_fee,
+    round(sum(clear_income), 2)                                as clear_income,
+    round(sum(return_sale_revenue), 2)                         as return_sale_revenue,
+    round(sum(refunds_other_income), 2)                        as refunds_other_income,
+    round(sum(refund_buyer_ship), 2)                           as refund_buyer_ship,
+    round(sum(refund_gift_package_fee), 2)                     as refund_gift_package_fee,
+    round(sum(refunds_promotional_discounts), 2)               as refunds_promotional_discounts,
+    round(sum(refund_commission), 2)                           as refund_commission,
+    round(sum(refund_fba_delivery_fee), 2)                     as refund_fba_delivery_fee,
+    round(sum(refund_point), 2)                                as refund_point,
+    round(sum(refund_other_transaction_expenses), 2)           as refund_other_transaction_expenses,
+    round(sum(refund_other_expenses), 2)                       as refund_other_expenses,
+    round(sum(sale_commission), 2)                             as sale_commission,
+    round(sum(delivery_fee), 2)                                as delivery_fee,
+    round(sum(fba_delivery_fee), 2)                            as fba_delivery_fee,
+    round(sum(additional_orders_channel_fba_delivery_fees), 2) as additional_orders_channel_fba_delivery_fees,
+    round(sum(cost_adjustment), 2)                             as cost_adjustment,
+    round(sum(storage_fee), 2)                                 as storage_fee,
+    round(sum(other_expenses), 2)                              as other_expenses,
+    round(sum(return_process_fee), 2)                          as return_process_fee,
+    round(sum(pre_process_fee), 2)                             as pre_process_fee,
+    round(sum(unplanned_service_fee), 2)                       as unplanned_service_fee,
+    round(sum(other_storage_fee), 2)                           as other_storage_fee,
+    round(sum(vine_order), 2)                                  as vine_order,
+    round(sum(integral), 2)                                    as integral,
+    round(sum(account_manager_fee), 2)                         as account_manager_fee,
+    round(sum(secondary_resale_fee), 2)                        as secondary_resale_fee,
+    round(sum(other_transaction_cost), 2)                      as other_transaction_cost,
+    round(sum(other_platform_expenses), 2)                     as other_platform_expenses,
+    round(sum(commodity_price_tax), 2)                         as commodity_price_tax,
+    round(sum(promotion_discount_tax), 2)                      as promotion_discount_tax,
+    round(sum(buyer_freight_tax), 2)                           as buyer_freight_tax,
+    round(sum(gift_package_tax), 2)                            as gift_package_tax,
+    round(sum(market_withhold_tax), 2)                         as market_withhold_tax,
+    round(sum(other_tax_amount), 2)                            as other_tax_amount,
+    round(sum(sales_tax_rebate), 2)                            as sales_tax_rebate,
+    round(sum(refund_tax_commodity_price_tax), 2)              as refund_tax_commodity_price_tax,
+    round(sum(refund_tax_promotion_discount_tax), 2)           as refund_tax_promotion_discount_tax,
+    round(sum(refund_tax_buyer_freight_tax), 2)                as refund_tax_buyer_freight_tax,
+    round(sum(refund_tax_gift_package_tax), 2)                 as refund_tax_gift_package_tax,
+    round(sum(refund_tax_market_withhold_tax), 2)              as refund_tax_market_withhold_tax,
+    round(sum(procurement_cost), 2)                            as procurement_cost,
+    round(sum(inventory_cost), 2)                              as inventory_cost,
+    round(sum(other_offline_expenses), 2)                      as other_offline_expenses,
+    round(sum(compensate), 2)                                  as compensate,
+    round(sum(compensation_income), 2)                         as compensation_income,
+    round(sum(compensate_adjustment), 2)                       as compensate_adjustment,
+    round(sum(advertising_expenses), 2)                        as advertising_expenses,
+    round(sum(monthly_storage_fee), 2)                         as monthly_storage_fee,
+    round(sum(long_term_storage_fee), 2)                       as long_term_storage_fee,
+    round(sum(report_monthly_storage_fee), 2)                  as report_monthly_storage_fee,
+    round(sum(report_long_term_storage_fee), 2)                as report_long_term_storage_fee,
+    round(sum(excess_storage_fee), 2)                          as excess_storage_fee,
+    round(sum(warehouse_consolidation_fee), 2)                 as warehouse_consolidation_fee,
+    round(sum(inventory_removal_disposal_fee), 2)              as inventory_removal_disposal_fee,
+    round(sum(amazon_logistics_carrier_fee), 2)                as amazon_logistics_carrier_fee,
+    round(sum(awd_wh_charges), 2)                              as awd_wh_charges,
+    round(sum(awd_storage_fee), 2)                             as awd_storage_fee,
+    round(sum(awd_operating_cost), 2)                          as awd_operating_cost,
+    round(sum(awd_delivery_charge), 2)                         as awd_delivery_charge,
+    round(sum(deal), 2)                                        as deal,
+    round(sum(coupon), 2)                                      as coupon,
+    round(sum(subscription_fee), 2)                            as subscription_fee,
+    round(sum(atoz_complaint_fee), 2)                          as atoz_complaint_fee,
+    round(sum(liquidation_fee), 2)                             as liquidation_fee,
+    round(sum(other_unclassified_expenses), 2)                 as other_unclassified_expenses,
+    round(sum(clear_market_withhold_tax), 2)                   as clear_market_withhold_tax,
+    round(sum(clear_sale_revenue), 2)                          as clear_sale_revenue,
+    round(sum(value_added_tax), 2)                             as value_added_tax,
+    round(sum(order_cost), 2)                                  as order_cost
+FROM base_data
+GROUP BY team_id, platform_id, store_id, market_id, sale_responsible),
+    calculated_metrics AS (SELECT *,
+    refund_commission + refund_fba_delivery_fee + refund_point +
+    refund_other_transaction_expenses + refund_other_expenses                      AS feeRefund,
+    fba_delivery_fee + additional_orders_channel_fba_delivery_fees                 AS distributionFee,
+    commodity_price_tax + promotion_discount_tax + buyer_freight_tax + gift_package_tax +
+    market_withhold_tax +
+    clear_market_withhold_tax                                                      AS salesTax,
+    value_added_tax + other_tax_amount                                             AS valueAddedTaxTotal,
+    refund_tax_commodity_price_tax + refund_tax_promotion_discount_tax +
+    refund_tax_buyer_freight_tax + refund_tax_gift_package_tax +
+    refund_tax_market_withhold_tax                                                 AS salesTaxRefund,
+    integral + deal + coupon + vine_order                                          AS promotionFee,
+    monthly_storage_fee + excess_storage_fee + long_term_storage_fee +
+    warehouse_consolidation_fee + inventory_removal_disposal_fee + return_process_fee +
+    amazon_logistics_carrier_fee + pre_process_fee + unplanned_service_fee +
+    other_storage_fee + awd_storage_fee + awd_operating_cost +
+    awd_delivery_charge                                                            AS storageFeeTotal,
+    subscription_fee + account_manager_fee + atoz_complaint_fee + secondary_resale_fee +
+    liquidation_fee + other_transaction_cost + other_platform_expenses + order_cost +
+    other_unclassified_expenses                                                    AS otherFee,
+    fba_sales_revenue + fbm_sales_revenue                                          AS salesVolumeAmount,
+    clear_income + compensate + promotional_discount + buyer_ship_cost +
+    gift_package_fee                                                               AS otherIncomeTotal,
+    refund_buyer_ship + refund_gift_package_fee +
+    refunds_promotional_discounts                                                  AS incomeRefund,
+    procurement_cost + inventory_cost                                              AS totalCost,
+    feeRefund + sale_commission + distributionFee + cost_adjustment + salesTax +
+    valueAddedTaxTotal + salesTaxRefund + advertising_expenses + promotionFee +
+    storageFeeTotal +
+    otherFee                                                                       AS platformExpenditure,
+    salesVolumeAmount + otherIncomeTotal + return_sale_revenue + incomeRefund      AS platformRevenue
+FROM aggregated_data)
+SELECT *,
+       round(platformRevenue + platformExpenditure, 2)                                                      AS platformGrossProfit,
+       round(platformRevenue + platformExpenditure + totalCost, 2)                                          AS salesGrossProfit,
+       round(CASE
+                 WHEN salesVolumeAmount = 0 THEN 0
+                 WHEN (platformRevenue + platformExpenditure + totalCost) < 0 AND salesVolumeAmount < 0 THEN -(
+                     (platformRevenue + platformExpenditure + totalCost) / salesVolumeAmount * 100)
+                 ELSE (platformRevenue + platformExpenditure + totalCost) / salesVolumeAmount * 100 END,
+             2)                                                                                             AS salesGrossProfitMargin,
+       round(CASE
+                 WHEN (platformExpenditure + totalCost) = 0 THEN 0
+                 ELSE (platformRevenue + platformExpenditure + totalCost) / abs(platformExpenditure + totalCost) END,
+             2)                                                                                             AS roi
+FROM calculated_metrics
+ORDER BY sales_revenue, team_id, platform_id, store_id, market_id, sale_responsible desc
+LIMIT 0 , 2000;
