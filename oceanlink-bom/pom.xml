@@ -38,6 +38,7 @@
 
     <org.projectlombok.version>1.18.30</org.projectlombok.version>
     <org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
+    <jmh.version>1.37</jmh.version>
 
     <oceanlink.api.version>1.0.0-SNAPSHOT</oceanlink.api.version>
     <oceanlink.common.version>1.0.0-SNAPSHOT</oceanlink.common.version>
@@ -133,6 +134,12 @@
         <artifactId>apm-toolkit-trace</artifactId>
         <version>${skywalking.version}</version>
       </dependency>
+      <!-- JMH 微基准框架 -->
+      <dependency>
+        <groupId>org.openjdk.jmh</groupId>
+        <artifactId>jmh-core</artifactId>
+        <version>${jmh.version}</version>
+      </dependency>
       <!-- annotation processor -->
       <dependency>
         <groupId>org.projectlombok</groupId>
@@ -144,6 +151,12 @@
         <groupId>org.mapstruct</groupId>
         <artifactId>mapstruct</artifactId>
         <version>${org.mapstruct.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.openjdk.jmh</groupId>
+        <artifactId>jmh-generator-annprocess</artifactId>
+        <version>${jmh.version}</version>
+        <scope>provided</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>
