@@ -51,6 +51,7 @@ mvn clean install
 | **oceanlink-product** | 商品模块 |
 | **oceanlink-market** | 市场模块 |
 | **oceanlink-cache-pipeline** | 缓存管道模块（多级缓存一致性） |
+| **oceanlink-inventory** | 库存模块（合并扣减 + Redis 强一致热点库存） |
 | **oceanlink-benchmark** | 基准测试模块（JMH） |
 
 ## 待开发项

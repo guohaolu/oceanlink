@@ -18,6 +18,7 @@
     <module>oceanlink-gateway</module>
     <module>oceanlink-cache-pipeline</module>
     <module>oceanlink-benchmark</module>
+    <module>oceanlink-inventory</module>
   </modules>
 
   <properties>
