@@ -1,0 +1,28 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: oceanlink-inventory
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/oceanlink_inventory?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    username: root
+    password: ${DB_PASSWORD:}
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      database: 0
+
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+
+# 合并扣减配置（对应 doc 架构：合并窗口 + 异步落库）
+inventory:
+  merge-deduct:
+    enabled: true
+    flush-interval-ms: 500
+    max-merge-count-per-sku: 100
