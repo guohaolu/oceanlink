@@ -54,9 +54,18 @@ inventory:
 - `GET /inventory/stock/{skuId}` 查询当前库存（优先 Redis）
 - `POST /inventory/sync/{skuId}` 将 DB 库存同步到 Redis（初始化/修复用）
 
+## 库存模型（与文档一致）
+
+- **sq 可售库存**：实际可售数量，合并扣减时减少。
+- **wq 预扣库存**：下单后由 sq 转入（预留扩展）。
+- **oq 占用库存**：付款后由 wq 转入，货品仓模式（预留扩展）。
+- **lq 预锁库存**：锁库存时增加并同步到 Redis 做扣减计数；DB 扣减条件为 `sq - lq - δq ≥ 0`。
+
+当前合并扣减只更新 `sq`；`wq`/`oq` 的流转（下单 sq→wq、付款 wq→oq）可按业务后续扩展。
+
 ## 表结构
 
-- `inventory`：主表，`sku_id` 唯一，`stock` + `version` 乐观锁。
+- `inventory`：主表，`sku_id` 唯一，字段 `sq`/`wq`/`oq`/`lq` + `version` 乐观锁。
 - `inventory_log`：扣减流水，`sku_id`、`deduct_qty`、`order_id`、`biz_type`。
 
 建表语句见 `src/main/resources/schema.sql`。
