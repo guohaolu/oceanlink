@@ -20,7 +20,13 @@ public class RefinableHashSet<T> {
     protected AtomicInteger setSize;
 
     // ===== 并发控制 =====
+    /**
+     * mark = 是否正在 resize
+     * <p>
+     * ref = 哪个线程在 resize
+     */
     private final AtomicMarkableReference<Thread> owner;
+
     private volatile ReentrantLock[] locks;
 
     public RefinableHashSet(int capacity) {
