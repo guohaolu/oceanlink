@@ -56,6 +56,14 @@
       <artifactId>guava</artifactId>
     </dependency>
     <dependency>
+      <groupId>io.github.resilience4j</groupId>
+      <artifactId>resilience4j-ratelimiter</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.redisson</groupId>
+      <artifactId>redisson</artifactId>
+    </dependency>
+    <dependency>
       <groupId>cn.hutool</groupId>
       <artifactId>hutool-all</artifactId>
     </dependency>
