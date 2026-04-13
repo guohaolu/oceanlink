@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: oceanlink-order
+
+order:
+  amazon:
+    sp-api:
+      endpoint: https://sellingpartnerapi-na.amazon.com
+      connect-timeout-seconds: 3
+      read-timeout-seconds: 10
+      default-included-data:
+        - buyer
+        - recipient
+    sqs:
+      queue-arn: ""
+      queue-url: ""
+      max-messages: 10
+      wait-time-seconds: 10
+      visibility-timeout-seconds: 30
+  sync:
+    scheduler:
+      backfill-cron: "0 0/30 * * * ?"
+      reconciliation-cron: "0 0/10 * * * ?"
+      repair-cron: "0 0 2 * * ?"
+      outbox-relay-cron: "0/30 * * * * ?"

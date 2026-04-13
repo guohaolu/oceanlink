@@ -15,6 +15,7 @@
     <module>oceanlink-market</module>
     <module>oceanlink-api</module>
     <module>oceanlink-common</module>
+    <module>oceanlink-order</module>
     <module>oceanlink-gateway</module>
     <module>oceanlink-cache-pipeline</module>
     <module>oceanlink-benchmark</module>

@@ -31,6 +31,9 @@
 git clone <repository-url>
 cd oceanlink
 
+# 安装本地 BOM（首次构建前执行）
+mvn -f oceanlink-bom/pom.xml install
+
 # 编译（跳过测试）
 mvn clean install -DskipTests
 
@@ -50,6 +53,7 @@ mvn clean install
 | **oceanlink-gateway** | 网关模块 |
 | **oceanlink-product** | 商品模块 |
 | **oceanlink-market** | 市场模块 |
+| **oceanlink-order** | 订单模块（COLA 5.0 多模块结构，已完成 Amazon SC 接单基础骨架） |
 | **oceanlink-cache-pipeline** | 缓存管道模块（多级缓存一致性） |
 | **oceanlink-inventory** | 库存模块（合并扣减 + Redis 强一致热点库存） |
 | **oceanlink-benchmark** | 基准测试模块（JMH） |
@@ -95,6 +99,11 @@ mvn clean install
 
 - 阿里开源：[TransmittableThreadLocal](https://github.com/alibaba/transmittable-thread-local)  
 - 自定义实现：TransmissibleThreadLocal（项目内扩展）  
+
+## 关键变更记录
+
+- 2026-04-13：新增 `oceanlink-order` 模块文档，首期聚焦 Amazon Seller Central（SC）接单模块设计。
+- 2026-04-13：完成 `oceanlink-order` 的 COLA 5.0 多模块工程骨架与首批领域测试，实现通知去重、履约映射、订单合并与 PII 访问策略基础能力。
 
 ---
 
