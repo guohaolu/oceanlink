@@ -78,9 +78,9 @@
 
 当前模块已完成设计和首批基础实现，完整 Amazon 接单链路仍在持续补齐。当前可评审文档：
 
-- [用户场景说明](src/spec/user-case.md)
-- [开发任务说明](src/spec/task.md)
-- [实现方案说明](src/spec/plan.md)
+- [用户场景说明](spec/user-case.md)
+- [开发任务说明](spec/task.md)
+- [实现方案说明](spec/plan.md)
 
 当前已落地的启动模块为 `oceanlink-order-start`，后续可直接作为订单域服务启动入口。
 
