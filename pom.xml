@@ -20,6 +20,7 @@
     <module>oceanlink-cache-pipeline</module>
     <module>oceanlink-benchmark</module>
     <module>oceanlink-inventory</module>
+      <module>oceanlink-ai</module>
   </modules>
 
   <properties>
